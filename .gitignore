@@ -6,8 +6,27 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+# VSCode
+.vscode
+
+# Django
+.venv
+db.sqlite3
+__pycache__
+.DS_Store
+*.pyc
+
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# hardhat
+coverage.json
+typechain
+typechain-types
+
+# Hardhat files
+cache
+artifacts
 
 # Runtime data
 pids

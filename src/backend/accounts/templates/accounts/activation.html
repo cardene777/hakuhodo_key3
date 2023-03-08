@@ -1,0 +1,15 @@
+{% block subject %}
+【ユーザー登録】
+{% endblock subject %}
+
+{% block text_body %}
+{{ name }}様
+
+本サービスに登録いただきありがとうございます。
+
+以下のリンクから本登録を完了してください。
+{{ protocol }}://{{ domain }}/{{ url|safe }}
+
+本登録いただくことでサービスをご利用頂けます。
+
+{% endblock text_body %}

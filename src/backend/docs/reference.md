@@ -1,0 +1,1 @@
+- [Django REST FrameworkでJWT認証システム構築チュートリアル(Djoserライブラリ)](https://www.youtube.com/watch?v=pPvPX8kXh7w)
