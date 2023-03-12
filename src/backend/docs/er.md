@@ -10,7 +10,7 @@ erDiagram
     Proposals ||--o{ Votes : "Proposalに対するVote"
     Users {
         BIGINT id PK
-        CHAR(42) wallet_address
+        CHAR wallet_address
         CHAR email
         CHAR icon
     }
@@ -22,7 +22,7 @@ erDiagram
         CHAR purpose
         DATE project_deadline
         DATE vote_deadline
-        SMALLINT(4) phase
+        SMALLINT phase
     }
 
     Votes {
