@@ -84,6 +84,10 @@ postgres=# \du
 postgres=# \l
 ```
 
+### Cloudinary
+
+- [Cloudinary](https://console.cloudinary.com/)
+
 ## Reference
 
 - [MySQLとPostgreSQLコマンド比較表](https://qiita.com/aosho235/items/c657e2fcd15fa0647471)

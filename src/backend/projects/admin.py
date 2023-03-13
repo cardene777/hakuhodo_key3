@@ -9,9 +9,10 @@ class ProjectsAdmin(admin.ModelAdmin):
         "logo",
         "description",
         "purpose",
-        "project_deadline",
+        "deadline",
         "vote_deadline",
-        "phase"
+        "phase",
+        "invalid"
     ]
     list_display = items
     list_filter = items

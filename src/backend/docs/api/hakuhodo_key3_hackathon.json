@@ -1,0 +1,921 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Hakuhodo Key3 Hackathon",
+    "description": "API documentation for connecting to Django Rest API.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.hackathon.com/v1",
+      "description": "Production server",
+      "variables": {
+        "version": {
+          "description": "API version",
+          "enum": [
+            "v1"
+          ],
+          "default": "v1"
+        }
+      }
+    },
+    {
+      "url": "https://127.0.0.1:8000/v1",
+      "description": "Delopment server",
+      "variables": {
+        "version": {
+          "description": "API version",
+          "enum": [
+            "v1"
+          ],
+          "default": "v1"
+        }
+      }
+    }
+  ],
+  "tags": [
+    {
+      "name": "Project",
+      "description": "Project関連API。"
+    },
+    {
+      "name": "Proposal",
+      "description": "Proposal関連API。"
+    },
+    {
+      "name": "User",
+      "description": "User関連API。"
+    },
+    {
+      "name": "Vote",
+      "description": "Vote関連API。"
+    },
+    {
+      "name": "Contract",
+      "description": "コントラクト関連API。"
+    }
+  ],
+  "paths": {
+    "/projects": {
+      "get": {
+        "summary": "全プロジェクト取得。",
+        "description": "全プロジェクトのデータを取得するAPI。",
+        "operationId": "get-projects",
+        "tags": [
+          "Project"
+        ],
+        "responses": {
+          "200": {
+            "description": "全プロジェクト取得成功。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/project"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "プロジェクト作成。",
+        "description": "プロジェクトを作成するAPI。",
+        "operationId": "post-projects",
+        "tags": [
+          "Project"
+        ],
+        "requestBody": {
+          "description": "Post時のrequestBodyデータ。",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/post_project"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "プロジェクト作成成功。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/project"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{id}": {
+      "get": {
+        "summary": "プロジェクト取得。",
+        "description": "プロジェクトを取得するAPI。",
+        "operationId": "get-project",
+        "tags": [
+          "Project"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Project id.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "プロジェクト取得成功。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/project"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "プロジェクト更新。",
+        "description": "プロジェクトを更新するAPI。",
+        "operationId": "put-project",
+        "tags": [
+          "Project"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Project id.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "プロジェクト更新成功。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/project"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "summary": "全ユーザー取得。",
+        "description": "全ユーザーのデータを取得するAPI。",
+        "operationId": "get-users",
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "全ユーザー取得成功。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/user"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "ユーザー作成。",
+        "description": "ユーザーを作成するAPI。",
+        "operationId": "post-user",
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "description": "Post時のrequestBodyデータ。",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/user"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ユーザー作成成功。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{wallet_address}": {
+      "get": {
+        "summary": "ユーザー取得。",
+        "description": "ユーザーを取得するAPI。",
+        "operationId": "get-user",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "wallet address",
+            "in": "path",
+            "description": "User wallet address.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ユーザー取得成功。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "ユーザー更新。",
+        "description": "ユーザーを更新するAPI。",
+        "operationId": "put-user",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "wallet address",
+            "in": "path",
+            "description": "User wallet address.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ユーザー更新成功。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/proposals": {
+      "get": {
+        "summary": "全提案取得。",
+        "description": "全提案のデータを取得するAPI。",
+        "operationId": "get-proposals",
+        "tags": [
+          "Proposal"
+        ],
+        "responses": {
+          "200": {
+            "description": "全提案取得成功。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/proposal"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "提案作成。",
+        "description": "提案を作成するAPI。",
+        "operationId": "post-proposal",
+        "tags": [
+          "Proposal"
+        ],
+        "requestBody": {
+          "description": "Post時のrequestBodyデータ。",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/post_proposal"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "提案作成成功。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/proposal"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/proposal/{id}": {
+      "get": {
+        "summary": "提案取得。",
+        "description": "提案を取得するAPI。",
+        "operationId": "get-proposal",
+        "tags": [
+          "Proposal"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Proposal id.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "提案取得成功。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "提案更新。",
+        "description": "提案を更新するAPI。",
+        "operationId": "put-proposal",
+        "tags": [
+          "Proposal"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Proposal id.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "提案更新成功。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/proposal"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vote": {
+      "get": {
+        "summary": "全投票取得。",
+        "description": "全投票のデータを取得するAPI。",
+        "operationId": "get-votes",
+        "tags": [
+          "Vote"
+        ],
+        "responses": {
+          "200": {
+            "description": "全投票取得成功。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/vote"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "投票作成。",
+        "description": "投票を作成するAPI。",
+        "operationId": "post-vote",
+        "tags": [
+          "Vote"
+        ],
+        "requestBody": {
+          "description": "Post時のrequestBodyデータ。",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/post_vote"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "投票作成成功。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/vote"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vote/{proposal_id}": {
+      "get": {
+        "summary": "提案ごとの投票取得。",
+        "description": "提案ごとの投票を取得するAPI。",
+        "operationId": "get-vote",
+        "tags": [
+          "Vote"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Proposal id.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "提案ごとの投票取得成功。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/vote"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vote/{vote_id}": {
+      "put": {
+        "summary": "提案更新。",
+        "description": "提案を更新するAPI。",
+        "operationId": "put-vote",
+        "tags": [
+          "Vote"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Vote id.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "投票更新成功。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/vote"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "user": {
+        "type": "object",
+        "title": "User",
+        "description": "User Data。",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "PK."
+          },
+          "wallet_address": {
+            "type": "string",
+            "description": "Wallet address."
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User company enmail."
+          },
+          "icon": {
+            "type": "string",
+            "format": "url",
+            "description": "User icon."
+          }
+        },
+        "example": {
+          "User": {
+            "id": 1,
+            "wallet_address": "0xd99dbc0196c5caf2b647c1c3a6d8f2db21c29f3d",
+            "email": "test@example.com",
+            "icon": "https://res.cloudinary.com/dpfvoiqdj/image/upload/v1678614356/media/images/cardene_a2fjui.jpg"
+          }
+        },
+        "required": [
+          "wallet_address",
+          "email",
+          "icon"
+        ]
+      },
+      "proposal": {
+        "type": "object",
+        "title": "Proposal",
+        "description": "Proposal Data。",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "PK."
+          },
+          "user": {
+            "$ref": "#/components/schemas/user"
+          },
+          "project": {
+            "$ref": "#/components/schemas/project"
+          },
+          "title": {
+            "type": "string",
+            "description": "Project title."
+          },
+          "description": {
+            "type": "string",
+            "description": "Project description."
+          }
+        },
+        "example": {
+          "Proposal": {
+            "id": 1,
+            "users": [
+              {
+                "id": 1,
+                "wallet_address": "0xd99dbc0196c5caf2b647c1c3a6d8f2db21c29f3d",
+                "email": "test@example.com",
+                "icon": "https://res.cloudinary.com/dpfvoiqdj/image/upload/v1678614356/media/images/cardene_a2fjui.jpg"
+              }
+            ],
+            "projects": {
+              "id": 1,
+              "users": [
+                {
+                  "id": 1,
+                  "wallet_address": "0xd99dbc0196c5caf2b647c1c3a6d8f2db21c29f3d",
+                  "email": "test@example.com",
+                  "icon": "https://res.cloudinary.com/dpfvoiqdj/image/upload/v1678614356/media/images/cardene_a2fjui.jpg"
+                }
+              ],
+              "title": "Hackathon",
+              "logo": "https://res.cloudinary.com/dpfvoiqdj/image/upload/v1678614356/media/images/cardene_a2fjui.jpg",
+              "description": "Hakuhodo Key3 Hackathon",
+              "purpose": "Create DAO tool",
+              "deadline": "2023-03-19",
+              "vote_deadline": "2023-03-23",
+              "phase": 1,
+              "invalid": false
+            },
+            "title": "Hackathon Proposal",
+            "description": "Hakuhodo Key3 Hackathon Proposal."
+          }
+        },
+        "required": [
+          "user",
+          "prijects",
+          "title",
+          "description"
+        ]
+      },
+      "post_proposal": {
+        "type": "object",
+        "title": "Post Proposal",
+        "description": "Post Proposal Data。",
+        "properties": {
+          "user": {
+            "type": "string",
+            "descriotion": "User wallet address."
+          },
+          "projects": {
+            "type": "integer",
+            "descriont": "Project data id."
+          },
+          "title": {
+            "type": "string",
+            "description": "Project title."
+          },
+          "description": {
+            "type": "string",
+            "description": "Project description."
+          }
+        },
+        "example": {
+          "Proposal": {
+            "id": 1,
+            "users": "0xd99dbc0196c5caf2b647c1c3a6d8f2db21c29f3d",
+            "projects": 1,
+            "title": "Hackathon Proposal",
+            "description": "Hakuhodo Key3 Hackathon Proposal."
+          }
+        },
+        "required": [
+          "users",
+          "prijects",
+          "title",
+          "description"
+        ]
+      },
+      "project": {
+        "type": "object",
+        "title": "Project",
+        "description": "Project Data。",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "PK."
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/user"
+            }
+          },
+          "title": {
+            "type": "string",
+            "description": "Project title."
+          },
+          "logo": {
+            "type": "string",
+            "format": "uri",
+            "description": "Project Logo."
+          },
+          "description": {
+            "type": "string",
+            "description": "Project description."
+          },
+          "purpose": {
+            "type": "string",
+            "description": "Project Purpose."
+          },
+          "deadline": {
+            "type": "string",
+            "description": "Project deadline."
+          },
+          "vote_deadline": {
+            "type": "string",
+            "description": "Vote deadline."
+          },
+          "phase": {
+            "type": "integer",
+            "default": 1,
+            "description": "Project phase."
+          },
+          "invalid": {
+            "type": "boolean",
+            "default": false,
+            "description": "Invalid project."
+          }
+        },
+        "example": {
+          "Project": {
+            "id": 1,
+            "users": [
+              {
+                "id": 1,
+                "wallet_address": "0xd99dbc0196c5caf2b647c1c3a6d8f2db21c29f3d",
+                "email": "test@example.com",
+                "icon": "https://res.cloudinary.com/dpfvoiqdj/image/upload/v1678614356/media/images/cardene_a2fjui.jpg"
+              }
+            ],
+            "title": "Hackathon",
+            "logo": "https://res.cloudinary.com/dpfvoiqdj/image/upload/v1678614356/media/images/cardene_a2fjui.jpg",
+            "description": "Hakuhodo Key3 Hackathon",
+            "purpose": "Create DAO tool",
+            "deadline": "2023-03-19",
+            "vote_deadline": "2023-03-23",
+            "phase": 1,
+            "invalid": false
+          }
+        },
+        "required": [
+          "users",
+          "title",
+          "logo",
+          "description",
+          "purpose",
+          "vote_deadline"
+        ]
+      },
+      "post_project": {
+        "type": "object",
+        "title": "Post Project",
+        "description": "Project Data。",
+        "properties": {
+          "users": {
+            "type": "array",
+            "items": {
+              "tyoe": "string",
+              "description": "User email."
+            }
+          },
+          "title": {
+            "type": "string",
+            "description": "Project title."
+          },
+          "logo": {
+            "type": "string",
+            "format": "uri",
+            "description": "Project Logo."
+          },
+          "description": {
+            "type": "string",
+            "description": "Project description."
+          },
+          "purpose": {
+            "type": "string",
+            "description": "Project Purpose."
+          },
+          "vote_deadline": {
+            "type": "string",
+            "description": "Vote deadline."
+          }
+        },
+        "example": {
+          "Project": {
+            "id": 1,
+            "users": [
+              [
+                "test@example.com",
+                "test2@example.com"
+              ]
+            ],
+            "title": "Hackathon",
+            "logo": "https://res.cloudinary.com/dpfvoiqdj/image/upload/v1678614356/media/images/cardene_a2fjui.jpg",
+            "description": "Hakuhodo Key3 Hackathon",
+            "purpose": "Create DAO tool",
+            "vote_deadline": "2023-03-23"
+          }
+        },
+        "required": [
+          "users",
+          "title",
+          "logo",
+          "description",
+          "purpose",
+          "vote_deadline"
+        ]
+      },
+      "vote": {
+        "type": "object",
+        "title": "Vote",
+        "description": "Vote Data。",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "PK."
+          },
+          "user": {
+            "$ref": "#/components/schemas/user"
+          },
+          "proposal": {
+            "$ref": "#/components/schemas/proposal"
+          },
+          "vote": {
+            "type": "boolean",
+            "description": "Vote."
+          }
+        },
+        "example": {
+          "Vote": {
+            "id": 1,
+            "users": [
+              {
+                "id": 1,
+                "wallet_address": "0xd99dbc0196c5caf2b647c1c3a6d8f2db21c29f3d",
+                "email": "test@example.com",
+                "icon": "https://res.cloudinary.com/dpfvoiqdj/image/upload/v1678614356/media/images/cardene_a2fjui.jpg"
+              }
+            ],
+            "projects": {
+              "id": 1,
+              "users": [
+                {
+                  "id": 1,
+                  "wallet_address": "0xd99dbc0196c5caf2b647c1c3a6d8f2db21c29f3d",
+                  "email": "test@example.com",
+                  "icon": "https://res.cloudinary.com/dpfvoiqdj/image/upload/v1678614356/media/images/cardene_a2fjui.jpg"
+                }
+              ],
+              "title": "Hackathon",
+              "logo": "https://res.cloudinary.com/dpfvoiqdj/image/upload/v1678614356/media/images/cardene_a2fjui.jpg",
+              "description": "Hakuhodo Key3 Hackathon",
+              "purpose": "Create DAO tool",
+              "deadline": "2023-03-19",
+              "vote_deadline": "2023-03-23",
+              "phase": 1,
+              "invalid": false
+            },
+            "vote": true
+          }
+        },
+        "required": [
+          "users",
+          "proposals",
+          "vote"
+        ]
+      },
+      "post_vote": {
+        "type": "object",
+        "title": "Post Vote",
+        "description": "Post Vote Data。",
+        "properties": {
+          "users": {
+            "type": "string",
+            "descriotion": "User wallet address."
+          },
+          "proposals": {
+            "type": "integer",
+            "descriont": "Proposal data id."
+          },
+          "vote": {
+            "type": "boolean",
+            "description": "Vote."
+          }
+        },
+        "example": {
+          "Vote": {
+            "id": 1,
+            "users": "0xd99dbc0196c5caf2b647c1c3a6d8f2db21c29f3d",
+            "proposals": 1,
+            "vote": true
+          }
+        },
+        "required": [
+          "users",
+          "proposals",
+          "vote"
+        ]
+      }
+    }
+  }
+}

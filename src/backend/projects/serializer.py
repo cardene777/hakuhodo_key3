@@ -6,4 +6,13 @@ from .models import Project
 class ProjectsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = ("name", "summary", "description", "purpose", "project_deadline", "contact", "vote_deadline")
+        fields = (
+            "title",
+            "logo",
+            "description",
+            "purpose",
+            "deadline",
+            "vote_deadline",
+            "phase",
+            "invalid"
+        )

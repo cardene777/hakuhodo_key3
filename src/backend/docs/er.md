@@ -1,3 +1,5 @@
+# Entity Relationship Diagram
+
 ```mermaid
 ---
 title: Animal example
@@ -20,9 +22,10 @@ erDiagram
         CHAR logo
         LONGTEXT description "Markdown"
         CHAR purpose
-        DATE project_deadline
+        DATE deadline
         DATE vote_deadline
-        SMALLINT phase
+        SMALLINT(4) phase
+        BOOL invalid
     }
 
     Votes {

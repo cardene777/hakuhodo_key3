@@ -1,8 +1,16 @@
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class Project(models.Model):
+    users = models.ManyToManyField(
+        verbose_name="project users",
+        to="users.User",
+        blank=False,
+        null=False,
+    )
     title = models.CharField(
         verbose_name="project name",
         max_length=100,
@@ -13,8 +21,8 @@ class Project(models.Model):
     logo = models.ImageField(
         verbose_name="project logo",
         upload_to="images",
-        null=True,
-        blank=True
+        null=False,
+        blank=False
     )
     description = models.TextField(
         verbose_name="project description",
@@ -28,10 +36,10 @@ class Project(models.Model):
         null=False,
         blank=False
     )
-    project_deadline = models.DateField(
+    deadline = models.DateField(
         verbose_name="project deadline",
-        null=False,
-        blank=False
+        blank=True,
+        default=datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y-%m-%d")
     )
     vote_deadline = models.DateField(
         verbose_name="project vote deadline",
@@ -44,6 +52,11 @@ class Project(models.Model):
         blank=False,
         default=1,
         validators=[MinValueValidator(1), MaxValueValidator(4)]
+    )
+    invalid = models.BooleanField(
+        verbose_name="invalid project",
+        default=False,
+        blank=True,
     )
 
     def __str__(self):
