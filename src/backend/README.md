@@ -1,5 +1,24 @@
 # 環境構築
 
+## 本番環境
+
+### 管理画面
+
+- https://cardene7.pythonanywhere.com/admin
+- username
+  - admin
+- password
+  - admin
+
+
+### API
+
+- https://cardene7.pythonanywhere.com/api/
+
+### test Curl
+
+- curl -X GET https://cardene7.pythonanywhere.com/api/projects/
+
 ## Python & Poetry Setup
 
 - 以下の記事を参考にしてください。
@@ -28,8 +47,10 @@ $ touch .env
 ```
 
 ```sh
-DATABASE_URL= # postgres://<username>:<password>@localhost/<db name>
-CLOUDINARY_NAME=
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
+DJANGO_SECRET_KEY=
+DATABASE_NAME=
+DATABASE_USER=
+DATABASE_PASSWORD=
+DATABASE_HOST=localhost
+DATABASE_PORT=3306
 ```
