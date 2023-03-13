@@ -12,7 +12,7 @@ erDiagram
     Proposals ||--o{ Votes : "Proposalに対するVote"
     Users {
         BIGINT id PK
-        CHAR(42) wallet_address
+        CHAR wallet_address
         CHAR email
         CHAR icon
     }
