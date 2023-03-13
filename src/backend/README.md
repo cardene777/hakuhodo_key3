@@ -15,6 +15,10 @@
 
 - https://cardene7.pythonanywhere.com/api/
 
+### test Curl
+
+- curl -X GET https://cardene7.pythonanywhere.com/api/projects/
+
 ## Python & Poetry Setup
 
 - 以下の記事を参考にしてください。
