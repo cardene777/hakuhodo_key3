@@ -18,7 +18,7 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', 'cardene7.pythonanywhere.com']
 
 
 # Application definition
@@ -119,6 +119,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -127,9 +128,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Image Settings (Cloudinary)
 MEDIA_URL = '/media/'
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": env("CLOUDINARY_NAME"),
-    "API_KEY": env("CLOUDINARY_API_KEY"),
-    "API_SECRET": env("CLOUDINARY_API_SECRET")
-}
+MEDIA_ROOT = 'media/'
+# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# CLOUDINARY_STORAGE = {
+#     "CLOUD_NAME": env("CLOUDINARY_NAME"),
+#     "API_KEY": env("CLOUDINARY_API_KEY"),
+#     "API_SECRET": env("CLOUDINARY_API_SECRET")
+# }
