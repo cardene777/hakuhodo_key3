@@ -24,7 +24,7 @@ erDiagram
         CHAR purpose
         DATE deadline
         DATE vote_deadline
-        SMALLINT(4) phase
+        SMALLINT phase
         BOOL invalid
     }
 
