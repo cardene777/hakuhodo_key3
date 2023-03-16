@@ -1,18 +1,13 @@
 <template>
   <v-app>
-    <v-main>
-      <router-view/>
-    </v-main>
+   <router-view/>
   </v-app>
 </template>
 
 <script>
-
+// import MainHeader from '../src/components/MainHeader.vue'
 export default {
   name: 'App',
-
-  data: () => ({
-    //
-  }),
+  // MainHeader
 }
 </script>
