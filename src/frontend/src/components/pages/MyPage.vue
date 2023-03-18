@@ -112,48 +112,33 @@
     </div>
   </div>
       
-      <!-- プロジェクト追加ポップアップ -->
-      <div
-        v-if="showProjectAddPopup"
-        class="popup-overlay"
-        @click.self="closeProjectAddPopup">
-      </div>
-      <div v-if="showProjectAddPopup" class="popup">
-        <h2 class="popup-title">PJ Add</h2>
-        <label for="logo" class="logo-label">Logo Image</label>
-        <input
-          id="logo"
-          type="file"
-          ref="logoInput"
-          @change="previewLogo"
-          style="display: none"
-        />
-        <div class="logo-preview" @click="$refs.logoInput.click()">
-          <img v-if="logoPreviewUrl" :src="logoPreviewUrl" />
-          <div v-else>Click to upload logo</div>
-        </div>
-        <label for="name">PJ Name</label>
-        <input id="name" type="text" v-model="projectName" />
-        <label for="description">Description</label>
-        <textarea id="description" v-model="projectDescription"></textarea>
-        <label for="members">Members</label>
-        <input id="members" type="text" v-model="projectMembers" />
-        <!-- 追加：目的と投票締切の入力欄 -->
-        <label for="purpose">Purpose</label>
-        <input id="purpose" type="text" v-model="projectPurpose" />
-        <label for="vote_deadline">Vote Deadline</label>
-        <input id="vote_deadline" type="date" v-model="projectVoteDeadline" />
-        <!-- /追加 -->
-        <button class="submit-btn" @click="submitProject">Submit</button>
-      </div>
+  <div v-if="showProjectAddPopup" class="popup-overlay" @click.self="closeProjectAddPopup">
+    <div class="popup">
+      <h2 class="popup-title">PJ Add</h2>
+      <label for="name">PJ Name</label>
+      <input id="name" type="text" v-model="projectName" />
+      <label for="description">Description</label>
+      <textarea id="description" v-model="projectDescription"></textarea>
+      <label for="purpose">Purpose</label>
+      <input id="purpose" type="text" v-model="projectPurpose" />
+      <label for="deadline">Deadline</label>
+      <input id="deadline" type="date" v-model="projectDeadline" />
+      <label for="vote_deadline">Vote Deadline</label>
+      <input id="vote_deadline" type="date" v-model="projectVoteDeadline" />
+      <label for="phase">Phase</label>
+      <input id="phase" type="number" v-model="projectPhase" />
+      <button class="submit-btn" @click="submitProject">Submit</button>
     </div>
+  </div>
+  </div>
   </div>
 </template>
 
 <script>
-import { useRouter } from "vue-router"; // リダイレクトのためにインポート
+import { useRouter } from "vue-router";
 import { ref } from 'vue';
 import axios from "axios";
+
 
 export default {
   setup() {
@@ -165,6 +150,8 @@ export default {
     const projectMembers = ref("");
     const projectPurpose = ref("");
     const projectVoteDeadline = ref("");
+    const projectDeadline = ref("");
+    const projectPhase = ref(null);
 
     return {
       router,
@@ -175,6 +162,8 @@ export default {
       projectMembers,
       projectPurpose,
       projectVoteDeadline,
+      projectDeadline,
+      projectPhase,
     };
   },
   data() {
@@ -215,18 +204,23 @@ export default {
     goToMyProjectAdd() {
       this.router.push("/pj-add");
     },
-    previewLogo() {
-      const file = this.$refs.logoInput.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.logoPreviewUrl = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    },
-    submitProject() {
-      // ここでプロジェクトを追加する処理を実装
-      this.showProjectAddPopup = false;
+    previewLogo(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    this.logoPreviewUrl = e.target.result;
+    const base64Image = e.target.result.replace(/^data:image\/(png|jpg|jpeg);base64,/, '');
+    this.logoData = {
+      file: base64Image,
+      type: file.type,
+    };
+  };
+  reader.readAsDataURL(file);
+},
+
+onImageUploaded(response) {
+      this.logoPreviewUrl = response.info.secure_url;
     },
     toggleFollow(index) {
       this.projects[index].following = !this.projects[index].following;
@@ -240,6 +234,37 @@ export default {
         this.projects = response.data;
       } catch (error) {
         console.error("Error fetching projects:", error);
+      }
+    },
+    getRandomImageURL() {
+      const randomNumber = Math.floor(Math.random() * 1000);
+      return `https://picsum.photos/id/${randomNumber}/200/300`;
+    },
+
+    async submitProject() {
+      try {
+        const requestData = {
+          title: this.projectName,
+          logo: this.getRandomImageURL(), // Use random image URL for logo
+          description: this.projectDescription,
+          purpose: this.projectPurpose,
+          deadline: this.projectDeadline,
+          vote_deadline: this.projectVoteDeadline,
+          phase: this.projectPhase,
+          invalid: false,
+        };
+
+        await axios.post('https://cardene7.pythonanywhere.com/api/projects/', requestData);
+
+        this.projectName = '';
+        this.projectDescription = '';
+        this.projectPurpose = '';
+        this.projectDeadline = '';
+        this.projectVoteDeadline = '';
+        this.projectPhase = null;
+        this.closeProjectAddPopup();
+      } catch (error) {
+        console.error(error);
       }
     },
   },
