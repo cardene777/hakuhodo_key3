@@ -60,36 +60,39 @@
           MY Project Add
         </button>
       </div>
-
+      
+      <!-- ProjectList -->
+      <!-- 選択されたメニューに応じてコンテンツを表示 -->
       <div v-if="selectedItem === 1" class="project-list">
-        <h2>Project List</h2>
-        <div class="project-container">
-          <div v-for="(project, index) in projects" :key="index" class="project-item">
-            <div class="project-image">
-              <img src="https://ferret.akamaized.net/uploads/article/6845/eyecatch/default-95e77d8922603c5a64085258c0cc3f96.png" alt="Project image" />
-            </div>
-            <div class="project-info">
-              <h3>{{ project.name }}</h3>
-              <span class="members">{{ project.members }} members</span>
-            </div>
-            <button
-              v-if="!project.following"
-              class="follow-btn"
-              @click="toggleFollow(index)"
-            >
-              Follow
-            </button>
-            <button
-              v-else
-              class="follow-btn following"
-              @click="toggleFollow(index)"
-            >
-              Follower
-            </button>
-          </div>
+    <h2>Project List</h2>
+    <div class="project-container">
+      <div v-for="(project, index) in projects" :key="index" class="project-item">
+        <div class="project-image">
+          <img :src="project.logo" alt="Project image" />
         </div>
+        <div class="project-info">
+          <h3>{{ project.title }}</h3>
+          <span class="members">{{ project.users }} members</span>
+        </div>
+        <button
+          v-if="!project.following"
+          class="follow-btn"
+          @click="toggleFollow(index)"
+        >
+          Follow
+        </button>
+        <button
+          v-else
+          class="follow-btn following"
+          @click="toggleFollow(index)"
+        >
+          Follower
+        </button>
       </div>
+    </div>
+  </div>
 
+  <!-- DAOPASS -->
       <div v-if="selectedItem === 2" class="dao-pass">
     <h2>My DAO PASS</h2>
     <button class="get-gas-fee-btn" @click="redirectToGasFee">
@@ -135,6 +138,12 @@
         <textarea id="description" v-model="projectDescription"></textarea>
         <label for="members">Members</label>
         <input id="members" type="text" v-model="projectMembers" />
+        <!-- 追加：目的と投票締切の入力欄 -->
+        <label for="purpose">Purpose</label>
+        <input id="purpose" type="text" v-model="projectPurpose" />
+        <label for="vote_deadline">Vote Deadline</label>
+        <input id="vote_deadline" type="date" v-model="projectVoteDeadline" />
+        <!-- /追加 -->
         <button class="submit-btn" @click="submitProject">Submit</button>
       </div>
     </div>
@@ -144,15 +153,18 @@
 <script>
 import { useRouter } from "vue-router"; // リダイレクトのためにインポート
 import { ref } from 'vue';
+import axios from "axios";
 
 export default {
   setup() {
     const router = useRouter();
-    const showProjectAddPopup = ref(false); // 追加
+    const showProjectAddPopup = ref(false);
     const logoPreviewUrl = ref("");
     const projectName = ref("");
     const projectDescription = ref("");
     const projectMembers = ref("");
+    const projectPurpose = ref("");
+    const projectVoteDeadline = ref("");
 
     return {
       router,
@@ -161,6 +173,8 @@ export default {
       projectName,
       projectDescription,
       projectMembers,
+      projectPurpose,
+      projectVoteDeadline,
     };
   },
   data() {
@@ -174,12 +188,18 @@ export default {
         { label: 'Message', icon: 'envelope' },
         { label: 'Settings', icon: 'cog' },
       ],
-      projects: [
-        { name: "Project 1", members: 5, following: false },
-        { name: "Project 2", members: 3, following: false },
-        { name: "Project 3", members: 7, following: false },
-      ],
+      projects: [],
     };
+  },
+  mounted() {
+    this.fetchProjects();
+  },
+  computed: {
+    filteredProjects() {
+      return this.projects.filter((project) => {
+        return project.active === true;
+      });
+    },
   },
   methods: {
     selectMenuItem(index) {
@@ -213,6 +233,14 @@ export default {
     },
     redirectToGasFee() {
       window.location.href = "https://portal.astar.network/astar/assets";
+    },
+    async fetchProjects() {
+      try {
+        const response = await axios.get("https://cardene7.pythonanywhere.com/api/projects/");
+        this.projects = response.data;
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
     },
   },
 };
@@ -372,6 +400,7 @@ export default {
   transition: background-color 0.3s;
   margin: auto;
 }
+
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -450,21 +479,16 @@ textarea {
   padding: 10px 20px;
   border-radius: 5px;
   font-size: 16px;
-  display: flex;
-  align-items: center;
   cursor: pointer;
   transition: background-color 0.3s;
-  margin-top: 10px;
-  width: 100%;
 }
 
 .submit-btn:hover {
   background-color: #218838;
 }
 
-.dao-pass-content {
-  text-align: center;
-  margin-bottom: 20px;
+label[for="purpose"] {
+  margin-top: 10px;
 }
 
 .dao-pass-title {
@@ -556,7 +580,5 @@ textarea {
     width: 200px;
   }
 }
-
-
 
 </style>
