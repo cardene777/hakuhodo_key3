@@ -1,6 +1,6 @@
 <template>
-        <div id="app">
-            <header>
+  <div id="app">
+    <header>
       <div class="header__top">
         <!-- 上段のヘッダー -->
       </div>
@@ -10,58 +10,122 @@
       </div>
     </header>
     <div class="login-modal" v-if="showModal">
-  <h2 class="login-modal__title">ログイン</h2>
-  <button class="connect-wallet-btn" @click="connectWallet">Connect Wallet</button>
-  <div class="input-container">
-    <label for="gmail-input">Gmail</label>
-    <input id="gmail-input" v-model="gmail">
-  </div>
-  <button class="login-btn" @click="login">ログイン</button>
-  <div>
-    <button class="close-btn" @click="showModal = false">閉じる</button>
-  </div>
-</div>
-
-
-<main class="main-content" :style="mainContentStyle">
-  <div class="main-content__text">
-    <div class="DAOtext">
-    <h1>DAO </h1>
-    <h1>Hackathon</h1>
+      <h2 class="login-modal__title">ログイン</h2>
+      <button
+        class="connect-wallet-btn"
+        @click="connectWallet"
+        v-if="!walletAddress"
+      >
+        Connect Wallet
+      </button>
+      <div v-if="walletAddress">{{ walletAddress }}</div>
+      <div class="input-container">
+        <label for="gmail-input">Gmail</label>
+        <input id="gmail-input" v-model="gmail">
+      </div>
+      <button class="login-btn" @click="login">ログイン</button>
+      <div>
+        <button class="close-btn" @click="showModal = false">閉じる</button>
+      </div>
     </div>
-    <div class="abaut">
-    <p>
-      We handle everything from home blood test,
-      online diagnostics to prescriptions delivery.</p>
-    </div>
-    <!-- <button>LEARN MORE</button> -->
+
+    <main class="main-content" :style="mainContentStyle">
+      <div class="main-content__text">
+        <div class="DAOtext">
+          <h1>DAO </h1>
+          <h1>Hackathon</h1>
+        </div>
+        <div class="abaut">
+          <p>
+            We handle everything from home blood test,
+            online diagnostics to prescriptions delivery.</p>
+        </div>
+        <!-- <button>LEARN MORE</button> -->
+      </div>
+    </main>
   </div>
-</main>
-</div>
 </template>
 <script>
+import Web3 from 'web3';
+import axios from 'axios';
+
 export default {
   data() {
     return {
       showModal: false,
       gmail: '',
+      walletAddress: '',
+      users: [],
       mainContentStyle: {
         backgroundImage: 'url(../../assets/Header.png)',
         backgroundSize: 'cover',
-        backgroundPosition: 'center',}
+        backgroundPosition: 'center',
+      },
     };
   },
+  created() {
+    this.getUsers();
+  },
   methods: {
-    connectWallet() {
-      console.log('Connect Wallet button clicked');
+    async getUsers() {
+      try {
+        const response = await axios.get('https://cardene7.pythonanywhere.com/api/users');
+        this.users = response.data;
+      } catch (error) {
+        console.error('Error getting users:', error);
+      }
     },
-    login() {
+    async login() {
       console.log('Login button clicked', this.gmail);
+      await this.postUser(this.walletAddress);
       this.showModal = false;
+      this.$router.push('/my-page');
+    },
+    async connectWallet() {
+      if (window.ethereum) {
+        try {
+          await window.ethereum.request({ method: 'eth_requestAccounts' });
+          const web3 = new Web3(window.ethereum);
+          const accounts = await web3.eth.getAccounts();
+          this.walletAddress = accounts[0];
+          console.log('Wallet address:', this.walletAddress);
+
+          const matchingUser = this.users.find((user) => user.wallet_address === this.walletAddress);
+          if (matchingUser) {
+            this.$router.push('/my-page');
+          }
+        } catch (error) {
+          console.error('Error connecting to MetaMask:', error);
+        }
+      } else {
+        console.error('MetaMask not detected.');
+      }
+    },
+    async postUser(walletAddress) {
+      const lastUser = this.users[this.users.length - 1];
+      const nextTokenId = lastUser ? lastUser.tokenId + 1 : 1;
+
+      const requestData = {
+        wallet_address: walletAddress,
+        email: this.gmail,
+        tokenId: nextTokenId,
+      };
+
+      try {
+        const response = await axios.post(
+          'https://cardene7.pythonanywhere.com/api/users',
+          requestData
+        );
+        console.log('User posted:', response.data);
+        this.showModal = false;
+      } catch (error) {
+        console.error('Error posting user:', error);
+      }
     },
   },
 };
 </script>
+
 <style scoped>
 .header__top {
   background-color: #3B00DD;
