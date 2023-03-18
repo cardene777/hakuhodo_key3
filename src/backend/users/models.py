@@ -17,11 +17,16 @@ class User(models.Model):
         blank=False,
         unique=True
     )
-    icon = models.ImageField(
-        verbose_name="user icon",
-        upload_to="images",
+    # icon = models.ImageField(
+    #     verbose_name="user icon",
+    #     upload_to="images",
+    #     null=False,
+    #     blank=False
+    # )
+    tokenId = models.IntegerField(
+        verbose_name="user token id",
         null=False,
-        blank=False
+        blank=False,
     )
 
     def __str__(self):

@@ -7,7 +7,7 @@ class UsersAdmin(admin.ModelAdmin):
     items: list = [
         "wallet_address",
         "email",
-        "icon",
+        "tokenId",
     ]
     list_display = items
     list_filter = items
