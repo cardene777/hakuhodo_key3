@@ -9,5 +9,5 @@ class UsersSerializer(serializers.ModelSerializer):
         fields = (
             "wallet_address",
             "email",
-            "icon",
+            "tokenId",
         )
