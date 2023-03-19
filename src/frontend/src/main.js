@@ -9,6 +9,7 @@ import "bootstrap";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import vue3GoogleLogin from "vue3-google-login";
 
 library.add(fas);
 
@@ -20,6 +21,9 @@ app
   .use(router)
   .use(store)
   .use(vuetify)
-  .mount('#app');
+  .use(vue3GoogleLogin, {
+    clientId: process.env.VUE_APP_GOOGLE_CLIENT_ID,
+  })
+  .mount("#app");
 
 loadFonts();
