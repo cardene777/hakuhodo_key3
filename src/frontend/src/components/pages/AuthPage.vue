@@ -6,7 +6,7 @@
       </div>
       <div class="header__bottom">
         <!-- 下段のヘッダー -->
-        <button v-if="isConnected && !gmail" class="header__login-btn" @click="showModal = true">ログイン{{isConnected}}{{gmail}}</button>
+        <button v-if="isConnected && !gmail" class="header__login-btn" @click="showModal = true">ログイン</button>
         <p v-else>
           <w3m-core-button />
         </p>
