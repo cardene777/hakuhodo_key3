@@ -78,6 +78,27 @@ describe("DaoPass", function () {
       );
     });
 
+    it("Check Total Supply", async function () {
+      const { daoPass, owner, account1, account2, account3 } =
+        await loadFixture(deployOneYearLockFixture);
+
+      // account1 mint token
+      await daoPass.connect(account1).mintToken();
+
+      // account2 mint token
+      await daoPass
+        .connect(account2)
+        .mintToken();
+
+      // account3 mint token
+      await daoPass
+        .connect(account3)
+        .mintToken();
+
+      expect(await daoPass.totalSupply()).to.equal(3);
+
+    });
+
     it("Vote", async function () {
       const { daoPass, owner, account1, account2, account3 } =
         await loadFixture(deployOneYearLockFixture);
