@@ -2,7 +2,7 @@
 
 ## Project Web Site
 
-- https://hakuhodo-key3-mfc05avq8-cardene777.vercel.app/
+- https://hakuhodo-key3.vercel.app/
 
 ## Project Introduction
 
