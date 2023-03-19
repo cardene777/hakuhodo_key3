@@ -1,13 +1,21 @@
 from django.urls import path, include
 from django.contrib import admin
 
-from project.urls import router as project_router
-from accounts.urls import router as accounts_router
+from projects.urls import router as projects_router
+from proposals.urls import router as proposals_router
+from users.urls import router as users_router
+from votes.urls import router as votes_router
+
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
-    path("api/auth/", include("djoser.urls")),
-    path("api/auth/", include("djoser.urls.jwt")),
-    path(r"api/", include(accounts_router.urls)),
-    path(r"api/", include(project_router.urls)),
     path("admin/", admin.site.urls),
+]
+
+urlpatterns += [
+    path(r"api/", include(projects_router.urls)),
+    path(r"api/", include(proposals_router.urls)),
+    path(r"api/", include(users_router.urls)),
+    path(r"api/", include(votes_router.urls)),
 ]
