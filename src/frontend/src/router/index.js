@@ -33,7 +33,8 @@ const routes = [
     component: ProjectProposal,
   },
   {
-    path: '/pj-info/:projectName',
+    path: '/pj-info/:title',
+    name: 'ProjectDetails',
     component: ProjectDetails,
   },
 ];

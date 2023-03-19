@@ -172,6 +172,7 @@ export default {
   },
   data() {
     return {
+      followedProjects: [],
       selectedItem: 0,
       menuItems: [
         { label: 'MY PROJECT', icon: 'project-diagram' },
