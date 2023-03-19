@@ -13,24 +13,11 @@
       </div>
     </header>
     <div class="login-modal" v-if="showModal">
-  <h2 class="login-modal__title">ログイン</h2>
-  <GoogleLogin :callback="callback"/>
-  <div>
-    <button class="close-btn" @click="showModal = false">閉じる</button>
-  </div>
-</div>
-
-
-<main class="main-content" :style="mainContentStyle">
-  <div class="main-content__text">
-    <div class="DAOtext">
-    <h1>DAO </h1>
-    <h1>Hackathon</h1>
-    </div>
-    <div class="abaut">
-    <p>
-      We handle everything from home blood test,
-      online diagnostics to prescriptions delivery.</p>
+      <h2 class="login-modal__title">ログイン</h2>
+      <GoogleLogin :callback="callback"/>
+      <div>
+        <button class="close-btn" @click="showModal = false">閉じる</button>
+      </div>
     </div>
 
     <main class="main-content" :style="mainContentStyle">
