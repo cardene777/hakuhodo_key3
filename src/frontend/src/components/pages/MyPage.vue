@@ -71,7 +71,11 @@
           <img :src="project.logo" alt="Project image" />
         </div>
         <div class="project-info">
-          <h3>{{ project.title }}</h3>
+          <h3>
+            <router-link :to="`/pj-info/${project.title}`">
+            {{ project.title }}
+            </router-link>
+          </h3>
           <span class="members">{{ project.users }} members</span>
         </div>
         <button
