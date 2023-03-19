@@ -1,7 +1,63 @@
-# Dao Pass
+# Pro Dao
 
-## Project
+## Project Web Site
 
+- https://hakuhodo-key3-mfc05avq8-cardene777.vercel.app/
+
+## Project Introduction
+
+Hello! I would like to introduce a DAO support tool that is ideal for projects within a company. This tool will promote autonomous activities of members in various projects such as new projects, business improvement projects, research and development, and so on. Let's take a look at this revolutionary tool together!
+
+### Tool Features
+
+This DAO support tool is designed as a web application that anyone can use easily. It supports wallet connection and Google Login, so even those who have no experience with Web3 or do not have a wallet can get started right away. In addition, the visual interface allows you to see at a glance the progress of your project and the results of your vote. The tool is updated in real time, so you can always see the latest information. There is no need to wait for a regular meeting or approval process.
+
+### Main Functions
+
+- Project, Proposal Creation Function: It is easy to create a new project.
+
+Creating a new project is easy. Just set the project name, description, and members! You can check the progress of the project in real time, so the project will proceed smoothly. You can also set different access rights for each project to ensure security. After creating a project, members can also create proposals and resolutions within the project.
+
+- Governance SBT: Astar Blockchain
+
+Using the Astar blockchain, users of the DAO tool can mint Governance SBTs in accordance with the ERC3525 standard. A Governance SBT (ERC 3525) is a Semi-Fungible Token (SFT) that represents a right to participate in the governance of a project. It allows project members to see their share and voting rights.
+
+- Governance Voting Function: 1 SBT = 1 vote.
+
+Users can vote on project proposals and resolutions according to the rule 1SBT = 1 vote. Users can directly express their opinions on projects of interest to them through Governance Voting. Voting periods and proposals can be easily managed within the tool for efficient decision making.
+
+The tool also publishes the results of the project vote and the mint status of the Governance SBT via blockchain technology. This increases transparency and builds trust among project members and DAO participants.
+
+- Self-driving promotion function through incentives:.
+
+Utilizing the SFT function of the ERC3525 standard, on-chain points are accumulated so that participants' contributions, such as votes, can be visualized. Organizations can give real prizes, wired access to new products, or bonuses to DAO participants based on their visualized contributions. This encourages DAO members to become active voluntarily.
+
+- Public forum and communication function (under development):.
+
+Task management and progress reports can be made in the tool's public forum, and discussions and opinions can be exchanged among members. The tool also has a variety of functions to help members clearly understand their roles and goals, and cooperate with other members to advance the project. The public forum and private message functions facilitate communication among project members. This improves teamwork and increases the success rate of the project.
+
+### Benefits of the tool
+
+- Improved decision-making process
+
+This tool facilitates decision-making and improves the decision-making process of the project. In addition, it encourages members to work autonomously.
+
+- Flexibility and speed.
+
+Decentralizing decision-making and administrative tasks that are concentrated in the manager's hands allows the organization to operate more autonomously. This will increase the speed and flexibility of decision making and improve the overall operational efficiency of the company.
+
+- Utilization of Incentives:.
+
+An incentive system using on-chain points can maintain and improve the motivation of members. Members are rewarded according to their contributions, which encourages them to participate in activities on their own initiative.
+
+- Customizable: This DAO support tool can be customized.
+
+This DAO support tool can be customized to meet the needs of your company or project. By adding your own functions and design, you can build the best DAO tool for your organization.
+
+We hope that you will introduce this DAO support tool for in-house projects to realize efficient and highly transparent project management. We look forward to seeing you soon!
+
+<details>
+<summary>Project Introduction (Ja)</summary>
 こんにちは！今回ご紹介するのは, 企業内プロジェクトに最適なDAO支援ツールです。これを使えば, 新規企画や業務改善プロジェクト, 研究開発など, 様々なプロジェクトでメンバーの自律的な活動が促進されます。さあ,一緒にこの画期的なツールを見ていきましょう！
 
 ### ツールの特徴
@@ -51,6 +107,7 @@ ERC3525規格のSFT機能を活用し,投票などの参加者の貢献が可視
 このDAO支援ツールは,企業やプロジェクトのニーズに応じてカスタマイズ開発が可能です。独自の機能やデザインを追加することで,組織に最適なDAOツールを構築できます。
 
 それでは,皆さんも是非この企業内プロジェクト向けDAO支援ツールを導入し,効率的で透明性の高いプロジェクト運営を実現してください。お待ちしております！
+</details>
 
 ## Language & Service & Tool
 

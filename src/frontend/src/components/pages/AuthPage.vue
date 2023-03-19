@@ -6,7 +6,7 @@
       </div>
       <div class="header__bottom">
         <!-- 下段のヘッダー -->
-        <button v-if="isConnected && !gmail" class="header__login-btn" @click="showModal = true">ログイン</button>
+        <button v-if="isConnected && !gmail" class="header__login-btn" @click="showModal = true">ログイン{{isConnected}}{{gmail}}</button>
         <p v-else>
           <w3m-core-button />
         </p>
@@ -23,13 +23,14 @@
     <main class="main-content" :style="mainContentStyle">
       <div class="main-content__text">
         <div class="DAOtext">
-          <h1>DAO </h1>
-          <h1>Hackathon</h1>
+          <h1>Pro Dao</h1>
         </div>
         <div class="abaut">
           <p>
-            We handle everything from home blood test,
-            online diagnostics to prescriptions delivery.</p>
+            Implement DAO support tools for in-house projects to <br />
+            achieve efficient and transparent project management.
+
+          </p>
         </div>
         <!-- <button>LEARN MORE</button> -->
       </div>
@@ -133,8 +134,8 @@ export default {
               tokenId: userTokenId
             }
           )
-          .then(response => {
-            console.log(`response.data ${JSON.stringify(response.data)}`)
+          .then(() => {
+            this.router.push("/my-page");
           })
           .catch(error => {
             console.log(error)
@@ -156,7 +157,21 @@ export default {
   },
   data() {
     const account = getAccount()
-    console.log(`account ${JSON.stringify(account)}`)
+    return {
+      showModal: false,
+      gmail: false,
+      walletAddress: '',
+      users: [],
+      mainContentStyle: {
+        backgroundImage: 'url(../../assets/Header.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      },
+      isConnected: account.isConnected
+    };
+  },
+  async created() {
+    const account = getAccount()
     const userData = async (walletAddress) => {
         try {
           const userData = await axios.get(`https://cardene7.pythonanywhere.com/api/users/${walletAddress}`)
@@ -170,23 +185,13 @@ export default {
           return Promise.resolve(false)
         }
     }
-    let isEmail = false;
-    userData(account.address).then((res) => {
-      isEmail = res
+    await userData(account.address).then((res) => {
+      console.log(`res ${res}`)
+      this.gmail = res
+      console.log(`isEmail ${this.gmail}`)
     })
-    return {
-      showModal: false,
-      gmail: isEmail,
-      walletAddress: '',
-      users: [],
-      mainContentStyle: {
-        backgroundImage: 'url(../../assets/Header.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      },
-      isConnected: account.isConnected
-    };
-  },
+    console.log(`isEmail ${this.gmail}`)
+  }
 };
 </script>
 
