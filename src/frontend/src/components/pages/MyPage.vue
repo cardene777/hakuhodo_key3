@@ -178,8 +178,6 @@ export default {
         { label: 'MY PROJECT', icon: 'project-diagram' },
         { label: 'PROJECT LIST', icon: 'list' },
         { label: 'DAO PASS', icon: 'passport' },
-        { label: 'Medicine Order', icon: 'prescription-bottle' },
-        { label: 'Message', icon: 'envelope' },
         { label: 'Settings', icon: 'cog' },
       ],
       projects: [],
