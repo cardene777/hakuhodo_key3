@@ -1,116 +1,228 @@
 <template>
-    <div class="app">
-      <div class="sidebar">
-        <ul class="menu">
-          <li
-            v-for="(item, index) in menuItems"
-            :key="index"
-            :class="{ active: selectedItem === index }"
-            @click="redirectToMyPage"
-          >
-            <font-awesome-icon :icon="item.icon" class="mr-2" />
-            {{ item.label }}
-          </li>
-        </ul>
-        <div class="logout" @click="logout">
-          <font-awesome-icon icon="sign-out-alt" class="mr-1" />
-          Log Out
-        </div>
-      </div>
-  
-      <div class="main">
-        <div class="project-details" v-if="project">
-          <div class="project-block">
-            <div class="project-image">
-              <img :src="project.logo" alt="Project logo" />
-            </div>
-            <div class="project-info">
-              <h2>{{ project.title }}</h2>
-              <p>{{ project.members }} members</p>
-              <button class="follow-btn">Follow</button>
-            </div>
-          </div>
-          <div class="project-overview">
-            <h3>Project Overview</h3>
-            <p>{{ project.description }}</p>
-          </div>
-          <div class="proposal-section">
-            <div class="proposal-header">
-              <h4>Proposal List</h4>
-              <button class="create-post-btn">Create Post</button>
-              </div>
-            <div class="proposal-block" v-for="proposal in proposals" :key="proposal.id">
-              <h5>{{ proposal.title }}</h5>
-              <p>{{ proposal.description }}</p>
-            </div>
-          </div>
-        </div>
+  <div class="app">
+    <div class="sidebar">
+      <ul class="menu">
+        <li
+          v-for="(item, index) in menuItems"
+          :key="index"
+          :class="{ active: selectedItem === index }"
+          @click="redirectToMyPage"
+        >
+          <font-awesome-icon :icon="item.icon" class="mr-2" />
+          {{ item.label }}
+        </li>
+      </ul>
+      <div class="logout" @click="logout">
+        <font-awesome-icon icon="sign-out-alt" class="mr-1" />
+        Log Out
       </div>
     </div>
-  </template>
-  
-  <script>
-  import axios from "axios";
-  
-  export default {
-    data() {
-      return {
-        selectedItem: null,
-        project: {
-          logo: "",
-          title: "",
-          description: "",
-          members: 0,
-          deadline: "",
-          vote_deadline: "",
-          phase: "",
-          proposals: []
-        },
-        menuItems: [
-          { label: "MY PROJECT", icon: "project-diagram" },
-          { label: "PROJECT LIST", icon: "list" },
-          { label: "DAO PASS", icon: "passport" },
-          { label: "Medicine Order", icon: "prescription-bottle" },
-          { label: "Message", icon: "envelope" },
-          { label: "Settings", icon: "cog" },
-        ],
-      };
-    },
-    async mounted() {
-      this.fetchProjectDetails();
-      this.fetchProposals();
-    },
-    methods: {
-      redirectToMyPage() {
-        this.$router.push("/my-page");
+    <div class="main">
+  <div class="project-details" v-if="project">
+    <div class="project-block">
+      <div class="project-image">
+        <img :src="project.logo" alt="Project logo" />
+      </div>
+      <div class="project-info">
+        <h2>{{ project.title }}</h2>
+        <p>{{ project.members }} members</p>
+        <button class="follow-btn">Follow</button>
+      </div>
+    </div>
+    <div class="project-overview">
+      <h3>Project Overview</h3>
+      <p>{{ project.description }}</p>
+    </div>
+    <div class="proposal-section">
+      <div class="proposal-header">
+        <h4 class="proposal-list-title">Proposal List</h4>
+        <button class="create-post-btn" @click="openCreatePostModal">Create Post</button>
+      </div>
+      <div class="proposal-block" v-for="proposal in proposals" :key="proposal.id">
+        <h5>{{ proposal.title }}</h5>
+        <p>{{ proposal.description }}</p>
+        <button class="vote-btn" @click="openVoteModal(proposal)">Vote</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" v-if="showVoteModal">
+    <div class="modal-content">
+      <h4>{{ selectedProposal.title }}</h4>
+      <p>{{ selectedProposal.description }}</p>
+      <p>Agree: {{ voteCounts.agree }}</p>
+      <p>Disagree: {{ voteCounts.disagree }}</p>
+      <div class="vote-buttons">
+        <button class="agree-btn" @click="submitVote(selectedProposal.pk, true)">Agree</button>
+        <button class="disagree-btn" @click="submitVote(selectedProposal.pk, false)">Disagree</button>
+      </div>
+      <button class="close-modal" @click="closeVoteModal">Close</button>
+    </div>
+  </div>
+  </div>
+  <div class="modal-overlay" v-if="showCreatePostModal">
+    <div class="modal-content">
+      <h4>Create a New Post</h4>
+      <input type="text" v-model="newPost.title" placeholder="Title" />
+      <textarea v-model="newPost.description" placeholder="Description"></textarea>
+      <div class="create-post-buttons">
+        <button class="submit-btn" @click="submitPost">Submit</button>
+        <button class="cancel-btn" @click="closeCreatePostModal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import axios from "axios";
+
+export default {
+  data() {
+    return {
+      selectedItem: null,
+      project: {
+        logo: "",
+        title: "",
+        description: "",
+        members: 0,
+        deadline: "",
+        vote_deadline: "",
+        phase: "",
+        proposals: []
       },
-      async fetchProjectDetails() {
+      voteCounts: {
+        agree: 0,
+        disagree: 0,
+      },
+      newPost: {
+        title: "",
+        description: "",
+      },
+      showCreatePostModal: false,
+      menuItems: [
+        { label: "MY PROJECT", icon: "project-diagram" },
+        { label: "PROJECT LIST", icon: "list" },
+{ label: "Settings", icon: "cog" },
+],
+showVoteModal: false,
+selectedProposal: {},
+};
+},
+async mounted() {
+  this.fetchProjectDetails(this.$route.params.pk);
+    this.fetchProposals(this.$route.params.pk);
+},
+methods: {
+redirectToMyPage() {
+this.$router.push("/my-page");
+},
+async fetchProjectDetails(pk) {
+      try {
+        const response = await axios.get(`https://cardene7.pythonanywhere.com/api/projects/${pk}/`);
+        this.project = response.data;
+      } catch (error) {
+        console.error("Error fetching project details:", error);
+      }
+    },
+
+    openCreatePostModal() {
+      this.showCreatePostModal = true;
+    },
+    closeCreatePostModal() {
+      this.showCreatePostModal = false;
+    },
+
+    async submitPost() {
+    try {
+      const walletAddress = await window.ethereum.request({ method: "eth_accounts" });
+      const userResponse = await axios.get(`https://cardene7.pythonanywhere.com/api/users/${walletAddress[0]}`);
+      const currentUser = userResponse.data;
+
+      if (!currentUser) {
+        console.error("Error: Wallet address not found in the list of users.");
+        return;
+      }
+
+      const postData = {
+        users: currentUser.pk,
+        projects: parseInt(this.$route.params.pk),
+        title: this.newPost.title,
+        description: this.newPost.description,
+      };
+
+      await axios.post("https://cardene7.pythonanywhere.com/api/proposals/", postData);
+      this.showCreatePostModal = false;
+      this.newPost.title = "";
+      this.newPost.description = "";
+      this.fetchProposals(this.$route.params.pk);
+    } catch (error) {
+      console.error("Error submitting post:", error);
+    }
+  },
+
+async fetchProposals(pk) {
   try {
-    const projectTitle = this.$route.params.title;
-    console.log('Project title from route params:', projectTitle);
-    const response = await axios.get("https://cardene7.pythonanywhere.com/api/projects/");
-    const projects = response.data;
-    console.log('Projects:', projects);
-    this.project = projects.find((project) => project.title === projectTitle);
-    console.log('Selected project:', this.project);
+    const response = await axios.get(
+      `https://cardene7.pythonanywhere.com/api/proposals/`
+    );
+    this.proposals = response.data.filter(
+      (proposal) => proposal.projects === parseInt(pk)
+    );
   } catch (error) {
-    console.error("Error fetching project details:", error);
+    console.error("Error fetching proposals:", error);
   }
 },
-async fetchProposals() {
-        try {
-          const response = await axios.get("https://cardene7.pythonanywhere.com/api/proposals/");
-          this.proposals = response.data;
-        } catch (error) {
-          console.error("Error fetching proposals:", error);
-        }
-      },
-      logout() {
-      },
+logout() {
+},
+async openVoteModal(proposal) {
+      this.selectedProposal = proposal;
+      this.showVoteModal = true;
+      await this.fetchVoteCounts(proposal.id);
     },
-  };
-  </script>
+closeVoteModal() {
+this.showVoteModal = false;
+},
+async submitVote(proposalId, vote) {
+      try {
+        const userAddress = await window.ethereum.request({ method: "eth_accounts" });
+        const userResponse = await axios.get(
+          `https://cardene7.pythonanywhere.com/api/users/${userAddress[0]}`
+        );
+        const currentUser = userResponse.data;
 
+        if (!currentUser) {
+          console.error("Error: Wallet address not found in the list of users.");
+          return;
+        }
+
+        const postData = {
+        users: currentUser.pk,
+        proposal: proposalId,
+        vote: vote,
+      };
+      await axios.post("https://cardene7.pythonanywhere.com/api/votes/", postData);
+      this.showVoteModal = false;
+      await this.fetchVoteCounts(proposalId);
+    } catch (error) {
+      console.error("Error submitting vote:", error);
+    }
+  },
+  async fetchVoteCounts(proposalId) {
+  try {
+    const response = await axios.get(
+      `https://cardene7.pythonanywhere.com/api/votes/?proposal=${proposalId}`
+    );
+    const votes = response.data;
+    this.voteCounts.agree = votes.filter((vote) => vote.vote === true && vote.proposal === this.selectedProposal.pk).length;
+    this.voteCounts.disagree = votes.filter((vote) => vote.vote === false && vote.proposal === this.selectedProposal.pk).length;
+  } catch (error) {
+    console.error("Error fetching vote counts:", error);
+  }
+},
+  },
+};
+
+</script>
 <style scoped>
 .app {
   display: flex;
@@ -164,6 +276,7 @@ async fetchProposals() {
   flex-direction: column;
   align-items: center;
 }
+
 .project-block {
   width: 80%;
   display: flex;
@@ -178,7 +291,8 @@ async fetchProposals() {
 .project-image img {
   width: 100%;
   height: auto;
-  object-fit: cover;
+  max-height: 400px; /* 追加：最大高さの設定 */
+  object-fit: contain; /* 変更：画像サイズを調整 */
   border-radius: 5px;
   margin-bottom: 20px;
 }
@@ -205,13 +319,12 @@ async fetchProposals() {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-left:330px;
+  margin-left: 330px;
 }
 
 .project-overview h3 {
   font-size: 35px;
   margin-bottom: 10px;
-  /* margin-left:170px; */
 }
 
 .project-overview p {
@@ -232,11 +345,18 @@ async fetchProposals() {
   padding-bottom: 10px;
 }
 
+.proposal-list-title {
+  font-size: 24px;
+}
+
 .proposal-block {
+  width: 70%;
   border: 1px solid #ccc;
   padding: 15px;
   border-radius: 5px;
   margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .create-post-btn {
@@ -248,36 +368,145 @@ async fetchProposals() {
   cursor: pointer;
 }
 
-@media (max-width: 768px) {
-  .sidebar {
-    width: 200px;
-  }
+.vote-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 15px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.vote-modal {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.5);
+display: flex;
+justify-content: center;
+align-items: center;
+}
 
-  .menu li {
-    padding: 10px  }
+.modal-content {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  max-width: 500px;
+  width: 90%;
+  margin: auto;
+}
+
+.create-post-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.submit-btn,
+.cancel-btn {
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.submit-btn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.cancel-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.vote-buttons {
+display: flex;
+justify-content: space-around;
+margin-top: 20px;
+}
+
+.agree-btn,
+.disagree-btn {
+background-color: #28a745;
+color: white;
+border: none;
+border-radius: 5px;
+padding: 10px 20px;
+cursor: pointer;
+}
+
+.disagree-btn {
+background-color: #dc3545;
+}
+
+.close-modal {
+background-color: #ccc;
+color: white;
+border: none;
+border-radius: 5px;
+padding: 5px 15px;
+cursor: pointer;
+margin-top: 20px;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+.sidebar {
+width: 200px;
+}
+
+.menu li {
+padding: 10px;
+}
 
 .logout {
-  left: 10px;
+left: 10px;
 }
 
 .main {
-  padding: 10px;
+padding: 10px;
 }
 
 .project-image img {
-  width: 70%;
+width: 70%;
 }
 
 .project-info h2 {
-  font-size: 18px;
+font-size: 18px;
 }
 
 .follow-btn {
-  padding: 5px 10px;
+padding: 5px 10px;
 }
 
 .project-overview h3 {
-  font-size: 20px;
+font-size: 20px;
 }
 }
 </style>
