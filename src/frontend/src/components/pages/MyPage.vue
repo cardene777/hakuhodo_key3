@@ -14,16 +14,16 @@
         </li>
       </ul>
       <div class="logout" @click="logout">
-        <font-awesome-icon icon="sign-out-alt" class="mr-1" />
-        Log Out
-      </div>
+    <font-awesome-icon icon="sign-out-alt" class="mr-1" />
+    Log Out
+  </div>
     </div>
 
     <!-- メインコンテンツ -->
     <div class="main">
       <!-- 検索欄 -->
       <div class="search-bar">
-        <h1 class="welcome-guest">Welcome Guest</h1>
+        <h1 class="welcome-guest">Welcome to {{ account }}</h1>
         <input class="search-input" type="text" placeholder="Search" />
       </div>
 
@@ -72,7 +72,7 @@
         </div>
         <div class="project-info">
           <h3>
-            <router-link :to="`/pj-info/${project.title}`">
+            <router-link :to="`/pj-info/${project.pk}`">
             {{ project.title }}
             </router-link>
           </h3>
@@ -97,7 +97,7 @@
   </div>
 
   <!-- DAOPASS -->
-      <div v-if="selectedItem === 2" class="dao-pass">
+      <!-- <div v-if="selectedItem === 2" class="dao-pass">
     <h2>My DAO PASS</h2>
     <button class="get-gas-fee-btn" @click="redirectToGasFee">
       ガス代の取得はこちら
@@ -114,7 +114,7 @@
         <li>✅ポイントは貯まります</li>
       </ul>
     </div>
-  </div>
+  </div> -->
       
   <div v-if="showProjectAddPopup" class="popup-overlay" @click.self="closeProjectAddPopup">
     <div class="popup">
@@ -140,9 +140,9 @@
 
 <script>
 import { useRouter } from "vue-router";
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from "axios";
-
+import { getAccount} from "@wagmi/core";
 
 export default {
   setup() {
@@ -156,6 +156,11 @@ export default {
     const projectVoteDeadline = ref("");
     const projectDeadline = ref("");
     const projectPhase = ref(null);
+    const account = ref(null);
+
+    onMounted(async () => {
+      account.value = await getAccount();
+    });
 
     return {
       router,
@@ -168,16 +173,17 @@ export default {
       projectVoteDeadline,
       projectDeadline,
       projectPhase,
+      account,
     };
   },
-  data() {
+  data() {    
     return {
       followedProjects: [],
       selectedItem: 0,
       menuItems: [
         { label: 'MY PROJECT', icon: 'project-diagram' },
         { label: 'PROJECT LIST', icon: 'list' },
-        { label: 'DAO PASS', icon: 'passport' },
+        // { label: 'DAO PASS', icon: 'passport' },
         { label: 'Settings', icon: 'cog' },
       ],
       projects: [],
@@ -201,8 +207,8 @@ export default {
     closeProjectAddPopup() {
       this.showProjectAddPopup = false;
     },
-    logout() {
-      // ログアウト処理をここに追加
+    async logout() {
+      this.$router.push('/');
     },
     goToMyProjectAdd() {
       this.router.push("/pj-add");
@@ -239,37 +245,38 @@ onImageUploaded(response) {
         console.error("Error fetching projects:", error);
       }
     },
-    getRandomImageURL() {
-      const randomNumber = Math.floor(Math.random() * 1000);
-      return `https://picsum.photos/id/${randomNumber}/200/300`;
-    },
 
     async submitProject() {
-      try {
-        const requestData = {
-          title: this.projectName,
-          logo: this.getRandomImageURL(), // Use random image URL for logo
-          description: this.projectDescription,
-          purpose: this.projectPurpose,
-          deadline: this.projectDeadline,
-          vote_deadline: this.projectVoteDeadline,
-          phase: this.projectPhase,
-          invalid: false,
-        };
+  try {
+    const requestData = {
+      title: this.projectName,
+      logo: this.getRandomImageURL(),
+      description: this.projectDescription,
+      purpose: this.projectPurpose,
+      deadline: this.projectDeadline,
+      vote_deadline: this.projectVoteDeadline,
+      phase: this.projectPhase,
+      invalid: false,
+      users: [{"id":1,"title":"title1","contents":"contents1","writer":1},{"id":2,"title":"title2","contents":"contents2","writer":1}]
+    };
 
-        await axios.post('https://cardene7.pythonanywhere.com/api/projects/', requestData);
+    await axios.post('https://cardene7.pythonanywhere.com/api/projects/', requestData);
 
-        this.projectName = '';
-        this.projectDescription = '';
-        this.projectPurpose = '';
-        this.projectDeadline = '';
-        this.projectVoteDeadline = '';
-        this.projectPhase = null;
-        this.closeProjectAddPopup();
-      } catch (error) {
-        console.error(error);
-      }
-    },
+    this.projectName = '';
+    this.projectDescription = '';
+    this.projectPurpose = '';
+    this.projectDeadline = '';
+    this.projectVoteDeadline = '';
+    this.projectPhase = null;
+    this.closeProjectAddPopup();
+  } catch (error) {
+    console.error(error);
+  }
+},
+getRandomImageURL() {
+  const randomNumber = Math.floor(Math.random() * 1000);
+  return `https://picsum.photos/id/${randomNumber}/200/300.png`;
+},
   },
 };
 </script>
