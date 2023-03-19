@@ -4,6 +4,7 @@ import MyPage from '../components/pages/MyPage';
 import ProjectInfo from '../components/pages/ProjectInfo';
 import ProjectProposal from '../components/pages/ProjectProposal';
 import AdminPage from '../components/pages/AdminPage';
+import ProjectDetails from '../views/ProjectDetails.vue';
 
 const routes = [
   {
@@ -31,7 +32,11 @@ const routes = [
     name: 'ProjectProposal',
     component: ProjectProposal,
   },
-
+  {
+    path: '/pj-info/:title',
+    name: 'ProjectDetails',
+    component: ProjectDetails,
+  },
 ];
 
 const router = createRouter({

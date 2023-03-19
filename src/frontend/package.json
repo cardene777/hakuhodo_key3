@@ -33,6 +33,7 @@
     "vuex": "^4.0.0",
     "webfontloader": "^1.0.0",
     "yarn": "^1.22.19"
+    "web3": "^1.8.2",
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

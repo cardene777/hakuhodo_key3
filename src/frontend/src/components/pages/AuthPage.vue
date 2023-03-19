@@ -1,6 +1,6 @@
 <template>
-        <div id="app">
-            <header>
+  <div id="app">
+    <header>
       <div class="header__top">
         <!-- 上段のヘッダー -->
       </div>
@@ -32,10 +32,22 @@
       We handle everything from home blood test,
       online diagnostics to prescriptions delivery.</p>
     </div>
-    <!-- <button>LEARN MORE</button> -->
+
+    <main class="main-content" :style="mainContentStyle">
+      <div class="main-content__text">
+        <div class="DAOtext">
+          <h1>DAO </h1>
+          <h1>Hackathon</h1>
+        </div>
+        <div class="abaut">
+          <p>
+            We handle everything from home blood test,
+            online diagnostics to prescriptions delivery.</p>
+        </div>
+        <!-- <button>LEARN MORE</button> -->
+      </div>
+    </main>
   </div>
-</main>
-</div>
 </template>
 
 <script>
@@ -178,6 +190,8 @@ export default {
     return {
       showModal: false,
       gmail: isEmail,
+      walletAddress: '',
+      users: [],
       mainContentStyle: {
         backgroundImage: 'url(../../assets/Header.png)',
         backgroundSize: 'cover',
