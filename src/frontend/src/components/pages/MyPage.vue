@@ -248,16 +248,19 @@ onImageUploaded(response) {
 
     async submitProject() {
   try {
+    const walletAddress = await window.ethereum.request({ method: "eth_accounts" });
+      const userResponse = await axios.get(`https://cardene7.pythonanywhere.com/api/users/${walletAddress[0]}`);
+      const currentUser = userResponse.data;
     const requestData = {
       title: this.projectName,
-      logo: this.getRandomImageURL(),
+      // logo: this.getRandomImageURL(),
       description: this.projectDescription,
       purpose: this.projectPurpose,
       deadline: this.projectDeadline,
       vote_deadline: this.projectVoteDeadline,
       phase: this.projectPhase,
       invalid: false,
-      users: [{"id":1,"title":"title1","contents":"contents1","writer":1},{"id":2,"title":"title2","contents":"contents2","writer":1}]
+      users: [currentUser.pk,],
     };
 
     await axios.post('https://cardene7.pythonanywhere.com/api/projects/', requestData);
@@ -275,7 +278,7 @@ onImageUploaded(response) {
 },
 getRandomImageURL() {
   const randomNumber = Math.floor(Math.random() * 1000);
-  return `https://picsum.photos/id/${randomNumber}/200/300.png`;
+  return `https://picsum.photos/id/${randomNumber}/200/300`;
 },
   },
 };

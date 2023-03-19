@@ -225,158 +225,158 @@ async submitVote(proposalId, vote) {
 </script>
 <style scoped>
 .app {
-display: flex;
+  display: flex;
 }
 
 .sidebar {
-width: 250px;
-background-color: #f8f9fa;
-min-height: 100vh;
-padding: 20px;
+  width: 250px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  padding: 20px;
 }
 
 .menu {
-list-style-type: none;
-padding: 0;
+  list-style-type: none;
+  padding: 0;
 }
 
 .menu li {
-padding: 15px 10px;
-display: flex;
-align-items: center;
-cursor: pointer;
-color: #ccc;
+  padding: 15px 10px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: #ccc;
 }
 
 .menu li.active {
-color: #28a745;
+  color: #28a745;
 }
 
 .logout {
-position: absolute;
-bottom: 20px;
-left: 20px;
-display: flex;
-align-items: center;
-cursor: pointer;
-color: #ccc;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: #ccc;
 }
 
 .logout i {
-margin-right: 5px;
+  margin-right: 5px;
 }
 
 .main {
-flex: 1;
-padding: 20px;
+  flex: 1;
+  padding: 20px;
 }
 
 .project-details {
-display: flex;
-flex-direction: column;
-align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .project-block {
-width: 80%;
-display: flex;
-flex-direction: column;
-align-items: center;
-border: 1px solid #ccc;
-padding: 20px;
-border-radius: 5px;
-margin-bottom: 20px;
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 20px;
 }
 
 .project-image img {
-width: 100%;
-height: auto;
-object-fit: cover;
-border-radius: 5px;
-margin-bottom: 20px;
+  width: 100%;
+  height: auto;
+  max-height: 400px; /* 追加：最大高さの設定 */
+  object-fit: contain; /* 変更：画像サイズを調整 */
+  border-radius: 5px;
+  margin-bottom: 20px;
 }
 
 .project-info {
-width: 100%;
-display: flex;
-flex-direction: column;
-align-items: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .follow-btn {
-background-color: #28a745;
-color: white;
-border: none;
-border-radius: 5px;
-padding: 10px 10px;
-cursor: pointer;
-margin-top: 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 10px;
+  cursor: pointer;
+  margin-top: 10px;
 }
 
 .project-overview {
-width: 100%;
-display: flex;
-flex-direction: column;
-align-items: flex-start;
-margin-left: 330px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 330px;
 }
 
 .project-overview h3 {
-font-size: 35px;
-margin-bottom: 10px;
+  font-size: 35px;
+  margin-bottom: 10px;
 }
 
 .project-overview p {
-margin-left: 20px;
+  margin-left: 20px;
 }
 
 .proposal-section {
-width: 100%;
-margin-top: 20px;
+  width: 100%;
+  margin-top: 20px;
 }
 
 .proposal-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-border-top: 1px solid #ccc;
-padding-top: 2%;
-padding-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #ccc;
+  padding-top: 2%;
+  padding-bottom: 10px;
 }
 
 .proposal-list-title {
-font-size: 24px;
+  font-size: 24px;
 }
 
 .proposal-block {
-width: 70%;
-border: 1px solid #ccc;
-padding: 15px;
-border-radius: 5px;
-margin-top: 20px;
-margin-left: auto;
-margin-right: auto;
+  width: 70%;
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 5px;
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .create-post-btn {
-background-color: #28a745;
-color: white;
-border: none;
-border-radius: 5px;
-padding: 5px 15px;
-cursor: pointer;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 15px;
+  cursor: pointer;
 }
 
 .vote-btn {
-background-color: #007bff;
-color: white;
-border: none;
-border-radius: 5px;
-padding: 5px 15px;
-cursor: pointer;
-margin-top: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 15px;
+  cursor: pointer;
+  margin-top: 10px;
 }
-
 .vote-modal {
 position: fixed;
 top: 0;
