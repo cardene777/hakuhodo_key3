@@ -20,20 +20,16 @@
       </div>
     </div>
 
-    <main class="main-content" :style="mainContentStyle">
-      <div class="main-content__text">
-        <div class="DAOtext">
-          <h1>Pro Dao</h1>
-        </div>
-        <div class="abaut">
-          <p>
-            Implement DAO support tools for in-house projects to <br />
-            achieve efficient and transparent project management.
-
-          </p>
-        </div>
-        <!-- <button>LEARN MORE</button> -->
-      </div>
+    <main class="main-content">
+    <div class="images-container">
+      <img
+        v-for="index in 5"
+        :key="index"
+        class="main-content__image"
+        :src="`../../assets/${index}.png`"
+        alt="Background image"
+      />
+    </div>
     </main>
   </div>
 </template>
@@ -163,10 +159,10 @@ export default {
       walletAddress: '',
       users: [],
       mainContentStyle: {
-        backgroundImage: 'url(../../assets/Header.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      },
+      backgroundImage: `url(../../assets/${Math.floor(Math.random() * 5) + 1}.png)`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+    },
       isConnected: account.isConnected
     };
   },
@@ -196,6 +192,10 @@ export default {
 </script>
 
 <style scoped>
+  header {
+    z-index: 10;
+    position: relative;
+  }
 .header__top {
   background-color: #3B00DD;
   height: 40px;
@@ -303,18 +303,23 @@ padding: 8px 16px;
 cursor: pointer;
 width: 100%;
 }
-.main-content {
+/* .main-content {
   display: flex;
   justify-content: left;
   align-items: center;
   padding: 4rem;
   height: 100vh;
   text-align: center;
-}
+} */
+.main-content__images {
+    display: flex;
+    flex-direction: column;
+  }
 
-.main-content__text {
-  max-width: 600px;
-}
+  .main-content__image {
+    width: 100%; /* 画像をコンテナの幅いっぱいに広げる */
+    object-fit: cover; /* 画像のアスペクト比を維持し、コンテナに合わせてクロップする */
+  }
 
 .DAOtext{
 position: absolute;
