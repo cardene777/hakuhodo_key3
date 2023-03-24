@@ -23,13 +23,13 @@
     <div class="main">
       <!-- 検索欄 -->
       <div class="search-bar">
-        <h1 class="welcome-guest">Welcome to {{ account }}</h1>
+        <h1 class="welcome-guest">Welcome to {{ account }} </h1>
         <input class="search-input" type="text" placeholder="Search" />
       </div>
-
+      <small class="current-date">{{ currentDate }}</small>
       <!-- 選択されたメニューに応じてコンテンツを表示 -->
       <div v-if="selectedItem === 0" class="my-project-list">
-        <h2>My Projects</h2>
+        <h2></h2>
     <div class="project-container">
       <div v-for="(project, index) in filteredProjects" :key="index" class="project-item">
   <div class="project-image">
@@ -75,7 +75,7 @@
       <!-- ProjectList -->
       <!-- 選択されたメニューに応じてコンテンツを表示 -->
       <div v-if="selectedItem === 1" class="project-list">
-    <h2>Project List</h2>
+    <h2></h2>
     <div class="project-container">
       <div v-for="(project, index) in projects" :key="index" class="project-item">
   <div class="project-image">
@@ -106,11 +106,24 @@
 >
   Follower
 </button>
-
-
       </div>
     </div>
   </div>
+
+  <div v-if="selectedItem === 2" class="dao-pass">
+  <div class="dao-pass-block">
+    <h2>MY Reward</h2>
+    <div class="additional-blocks">
+  <div class="additional-block">
+    <h3>FOLLOWED PJ</h3>
+  </div>
+  <div class="additional-block">
+    <h3>Onchain Point</h3>
+  </div>
+</div>
+
+  </div>
+</div>
 
   <div v-if="showProjectAddPopup" class="popup-overlay" @click.self="closeProjectAddPopup">
     <div class="popup">
@@ -150,7 +163,6 @@
 import { useRouter } from "vue-router";
 import { ref, onMounted } from 'vue';
 import axios from "axios";
-import { getAccount} from "@wagmi/core";
 
 export default {
   
@@ -169,9 +181,10 @@ export default {
     const logoData = ref(null);
     const descriptionImagePreviewUrl = ref("");
     const descriptionImageData = ref(null);
+    const currentDate = ref(new Date().toLocaleDateString());
 
     onMounted(async () => {
-      account.value = await getAccount();
+      account.value = await window.ethereum.request({ method: "eth_accounts" });
     });
 
     return {
@@ -189,6 +202,7 @@ export default {
       logoData,
       descriptionImagePreviewUrl,
       descriptionImageData,
+      currentDate,
     };
   },
   
@@ -199,8 +213,7 @@ export default {
       menuItems: [
         { label: 'MY PROJECT', icon: 'project-diagram' },
         { label: 'PROJECT LIST', icon: 'list' },
-        // { label: 'DAO PASS', icon: 'passport' },
-        { label: 'Settings', icon: 'cog' },
+        { label: 'DAO PASS', icon: 'passport' },
       ],
       projects: [],
     };
@@ -698,5 +711,65 @@ label[for="purpose"] {
   right: 0px;
   display: flex;
   align-items: center;
+}
+
+.current-date {
+  font-size: 12px;
+  color: #888;
+  display: flex;
+  margin-bottom: 70px;
+}
+
+/* DAO PASS section styles */
+.dao-pass {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+}
+
+/* Rectangular block styles */
+.dao-pass-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  width: 100%;
+  max-width: 400px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+}
+
+/* Additional blocks styles */
+.additional-blocks {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+}
+
+/* Individual additional block styles */
+.additional-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  width: 100%;
+  max-width: 180px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+}
+
+/* Titles */
+h2, h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
 }
 </style>
