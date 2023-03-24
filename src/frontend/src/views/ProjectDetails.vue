@@ -594,19 +594,19 @@ margin-top: 20px;
 }
 
 .phase-color-1 {
-  background-color: #FFC107;
+  background-color: #EED8EE;
 }
 
 .phase-color-2 {
-  background-color: #28A745;
+  background-color: #E3B8FF;
 }
 
 .phase-color-3 {
-  background-color: #17A2B8;
+  background-color: #C38FFF;
 }
 
 .phase-color-4 {
-  background-color: #DC3545;
+  background-color: #A363FF;
 }
 
 .phase-container {
