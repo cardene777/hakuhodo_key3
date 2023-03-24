@@ -46,7 +46,7 @@
       <div class="status-button" :class="{ 'active': isActive(proposal.vote_deadline), 'closed': !isActive(proposal.vote_deadline) }">
         {{ isActive(proposal.vote_deadline) ? "Active" : "Closed" }}
       </div>
-      <button class="vote-btn" @click="openVoteModal(proposal)">Vote</button>
+      <button class="vote-btn" v-if="isActive(proposal.vote_deadline)" @click="openVoteModal(proposal)">Vote</button>
     </div>
   </div>
   </div>
@@ -382,7 +382,7 @@ async submitVote(proposalId, vote) {
   color: white;
   border: none;
   border-radius: 5px;
-  padding: 5px 15px;
+  padding: 15px 35px;
   cursor: pointer;
 }
 
@@ -517,7 +517,7 @@ margin-top: 20px;
     right: 5px;
     padding: 5px;
     font-size: 12px;
-    border-radius: 3px;
+    border-radius: 15px;
   }
 
   .status-button.active {
