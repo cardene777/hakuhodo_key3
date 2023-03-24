@@ -67,10 +67,13 @@
     <h2>Project List</h2>
     <div class="project-container">
       <div v-for="(project, index) in projects" :key="index" class="project-item">
-        <div class="project-image">
-          <img :src="project.logo" alt="Project image" />
-        </div>
-        <div class="project-info">
+  <div class="project-image">
+    <img :src="project.logo" alt="Project image" />
+  </div>
+  <div class="project-info">
+    <div class="phase-container">
+      <div class="phase" :class="`phase-color-${project.phase}`">{{ project.phase }}</div>
+    </div>
           <h3>
             <router-link :to="`/pj-info/${project.pk}`">
             {{ project.title }}
@@ -96,26 +99,6 @@
     </div>
   </div>
 
-  <!-- DAOPASS -->
-      <!-- <div v-if="selectedItem === 2" class="dao-pass">
-    <h2>My DAO PASS</h2>
-    <button class="get-gas-fee-btn" @click="redirectToGasFee">
-      ガス代の取得はこちら
-    </button>
-    <button class="free-mint-btn">
-      <font-awesome-icon icon="plus" class="mr-1" />
-      FREE MINT
-    </button>
-    <div class="dao-pass-description">
-      <h3>DAO PASSを保有すると</h3>
-      <ul>
-        <li>✅分散型Projectに参加できます</li>
-        <li>✅提案に投票できます</li>
-        <li>✅ポイントは貯まります</li>
-      </ul>
-    </div>
-  </div> -->
-      
   <div v-if="showProjectAddPopup" class="popup-overlay" @click.self="closeProjectAddPopup">
     <div class="popup">
       <div class="popup-inner">
@@ -242,13 +225,13 @@ onImageUploaded(response) {
       window.location.href = "https://portal.astar.network/astar/assets";
     },
     async fetchProjects() {
-      try {
-        const response = await axios.get("https://cardene7.pythonanywhere.com/api/projects/");
-        this.projects = response.data;
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      }
-    },
+  try {
+    const response = await axios.get("https://cardene7.pythonanywhere.com/api/projects/");
+    this.projects = response.data;
+  } catch (error) {
+    console.error("Error fetching project:", error);
+  }
+},
 
 
     previewLogo(e) {
@@ -306,11 +289,6 @@ onImageUploaded(response) {
     console.error(error);
   }
 },
-
-// getRandomImageURL() {
-//   const randomNumber = Math.floor(Math.random() * 1000);
-//   return `https://picsum.photos/id/${randomNumber}/200/300`;
-// },
   },
 };
 </script>
@@ -394,12 +372,14 @@ onImageUploaded(response) {
 }
 
 .project-item {
+  position: relative;
   background-color: #f8f9fa;
   border-radius: 5px;
   padding: 10px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  border:2px solid rgba(0, 0, 0, 0.7)
 }
 
 .project-image {
@@ -622,48 +602,43 @@ label[for="purpose"] {
 .dao-pass-description li i {
   margin-right: 10px;
 }
-/* レスポンシブ対応 */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 200px;
-  }
 
-  .menu li {
-    padding: 10px 5px;
-    font-size: 14px;
-  }
-
-  .logout {
-    left: 10px;
-  }
-
-  .main {
-    padding: 10px;
-  }
-
-  .search-bar input {
-    padding: 5px;
-    font-size: 12px;
-  }
-
-  .project-list h2 {
-    font-size: 1.5rem;
-  }
-
-  .add-btn {
-    padding: 8px 16px;
-    font-size: 14px;
-    margin: 0 auto;
-  }
-  .welcome-guest {
-    font-size: 1.5rem;
-  }
-
-  .search-input {
-    padding: 5px 10px;
-    font-size: 14px;
-    width: 200px;
-  }
+.phase {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: #f8f9fa;
 }
 
+.phase-color-1 {
+  background-color: #FFC107;
+}
+
+.phase-color-2 {
+  background-color: #28A745;
+}
+
+.phase-color-3 {
+  background-color: #17A2B8;
+}
+
+.phase-color-4 {
+  background-color: #DC3545;
+}
+
+.phase-container {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  display: flex;
+  align-items: center;
+}
 </style>

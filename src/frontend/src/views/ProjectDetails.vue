@@ -28,6 +28,9 @@
         <p>{{ project.members }} members</p>
         <button class="follow-btn">Follow</button>
       </div>
+      <div class="phase-container">
+      <div class="phase" :class="`phase-color-${project.phase}`">{{ project.phase }}</div>
+    </div>
     </div>
     <div class="project-overview">
       <img :src="project.description_img" alt="Project description image" /> 
@@ -321,6 +324,7 @@ async submitVote(proposalId, vote) {
 }
 
 .project-block {
+  position: relative;
   width: 80%;
   display: flex;
   flex-direction: column;
@@ -555,4 +559,43 @@ margin-top: 20px;
     background-color: #ccc;
     color: white;
   }
+
+  .phase {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: #f8f9fa;
+}
+
+.phase-color-1 {
+  background-color: #FFC107;
+}
+
+.phase-color-2 {
+  background-color: #28A745;
+}
+
+.phase-color-3 {
+  background-color: #17A2B8;
+}
+
+.phase-color-4 {
+  background-color: #DC3545;
+}
+
+.phase-container {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  display: flex;
+  align-items: center;
+}
 </style>
