@@ -1,6 +1,5 @@
 <template>
   <div class="app">
-    <!-- サイドバー -->
     <div class="sidebar">
       <ul class="menu">
         <li
@@ -14,147 +13,122 @@
         </li>
       </ul>
       <div class="logout" @click="logout">
-    <font-awesome-icon icon="sign-out-alt" class="mr-1" />
-    Log Out
-  </div>
+        <font-awesome-icon icon="sign-out-alt" class="mr-1" />
+        Log Out
+      </div>
     </div>
-
-    <!-- メインコンテンツ -->
     <div class="main">
-      <!-- 検索欄 -->
       <div class="search-bar">
         <h1 class="welcome-guest">Welcome to {{ account }} </h1>
         <input class="search-input" type="text" placeholder="Search" />
       </div>
       <small class="current-date">{{ currentDate }}</small>
-      <!-- 選択されたメニューに応じてコンテンツを表示 -->
-      <div v-if="selectedItem === 0" class="my-project-list">
-        <h2></h2>
-    <div class="project-container">
-      <div v-for="(project, index) in filteredProjects" :key="index" class="project-item">
-  <div class="project-image">
-    <img :src="project.logo" alt="Project image" />
-  </div>
-  <div class="project-info">
-    <div class="phase-container">
-      <div class="phase" :class="`phase-color-${project.phase}`">{{ project.phase }}</div>
-    </div>
-          <h3>
-            <router-link :to="`/pj-info/${project.pk}`">
-            {{ project.title }}
-            </router-link>
-          </h3>
-          <span class="members">members {{ project.users }}</span>
-        </div>
-        <button
-  v-if="!project.following"
-  class="follow-btn"
-  @click="toggleFollow(project)"
->
-  Follow
-</button>
-<button
-  v-else
-  class="follow-btn following"
-  @click="toggleFollow(project)"
->
-  Follower
-</button>
 
+<!-- MY PROJECT -->
+<div v-if="selectedItem === 0" class="my-project-list">
+  <div class="project-container">
+    <div v-for="(project, index) in filteredProjects" :key="index" class="project-item">
+      <div class="project-image">
+        <img :src="project.logo" alt="Project image" />
       </div>
-    </div>
-        <button
-          class="add-btn"
-          @click="showProjectAddPopup = true"
-        >
-          <font-awesome-icon icon="plus" class="mr-1" />
-          MY Project Add
-        </button>
-      </div>
-      
-      <!-- ProjectList -->
-      <!-- 選択されたメニューに応じてコンテンツを表示 -->
-      <div v-if="selectedItem === 1" class="project-list">
-    <h2></h2>
-    <div class="project-container">
-      <div v-for="(project, index) in projects" :key="index" class="project-item">
-  <div class="project-image">
-    <img :src="project.logo" alt="Project image" />
-  </div>
-  <div class="project-info">
-    <div class="phase-container">
-      <div class="phase" :class="`phase-color-${project.phase}`">{{ project.phase }}</div>
-    </div>
-          <h3>
-            <router-link :to="`/pj-info/${project.pk}`">
-            {{ project.title }}
-            </router-link>
-          </h3>
-          <span class="members">members {{ project.users }}</span>
+      <div class="project-info">
+        <div class="phase-container">
+          <div class="phase" :class="`phase-color-${project.phase}`">{{ project.phase }}</div>
         </div>
-        <button
-  v-if="!project.following"
-  class="follow-btn"
-  @click="toggleFollow(project)"
->
-  Follow
-</button>
-<button
-  v-else
-  class="follow-btn following"
-  @click="toggleFollow(project)"
->
-  Follower
-</button>
+        <h3>
+          <router-link :to="`/pj-info/${project.pk}`">
+            {{ project.title }}
+          </router-link>
+        </h3>
+        <span class="members">members {{ project.users }}</span>
       </div>
+      <button v-if="!project.following" class="follow-btn" @click="toggleFollow(project)">
+        Follow
+      </button>
+      <button v-else class="follow-btn following" @click="toggleFollow(project)">
+        Follower
+      </button>
     </div>
   </div>
+  <button class="add-btn" @click="showProjectAddPopup = true">
+    <font-awesome-icon icon="plus" class="mr-1" />
+    MY Project Add
+  </button>
+</div>
 
-  <div v-if="selectedItem === 2" class="dao-pass">
+<!-- PROJECT LIST -->
+<div v-if="selectedItem === 1" class="project-list">
+  <div class="project-container">
+    <div v-for="(project, index) in projects" :key="index" class="project-item">
+      <div class="project-image">
+        <img :src="project.logo" alt="Project image" />
+      </div>
+      <div class="project-info">
+        <div class="phase-container">
+          <div class="phase" :class="`phase-color-${project.phase}`">{{ project.phase }}</div>
+        </div>
+        <h3>
+          <router-link :to="`/pj-info/${project.pk}`">
+            {{ project.title }}
+          </router-link>
+        </h3>
+        <span class="members">members {{ project.users }}</span>
+      </div>
+      <button v-if="!project.following" class="follow-btn" @click="toggleFollow(project)">
+        Follow
+      </button>
+      <button v-else class="follow-btn following" @click="toggleFollow(project)">
+        Follower
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- DAO PASS -->
+<div v-if="selectedItem === 2" class="dao-pass">
   <div class="dao-pass-block">
     <h2>MY Reward</h2>
     <div class="additional-blocks">
-  <div class="additional-block">
-    <h3>FOLLOWED PJ</h3>
-  </div>
-  <div class="additional-block">
-    <h3>Onchain Point</h3>
-  </div>
-</div>
-
-  </div>
-</div>
-
-  <div v-if="showProjectAddPopup" class="popup-overlay" @click.self="closeProjectAddPopup">
-    <div class="popup">
-      <div class="popup-inner">
-        <h2 class="popup-title">PJ Add</h2>
-        <label for="logo">Project Logo</label>
-        <input id="logo" type="file" accept="image/*" @change="previewLogo" />
-        <div class="logo-preview" v-if="logoPreviewUrl">
-          <img :src="logoPreviewUrl" alt="Logo Preview" />
-        </div>
-        <label for="name">Project Name</label>
-        <input id="name" type="text" v-model="projectName" />
-        <label for="description">Description</label>
-        <textarea id="description" v-model="projectDescription"></textarea>
-
-        <label for="description_img">Project Description Image</label>
-        <input id="description_img" type="file" accept="image/*" @change="previewDescriptionImage" />
-        <div class="description-img-preview" v-if="descriptionImagePreviewUrl">
-          <img :src="descriptionImagePreviewUrl" alt="Description Image Preview" />
-        </div>
-
-        <label for="deadline">Deadline</label>
-        <input id="deadline" type="date" v-model="projectDeadline" />
-        <label for="vote_deadline">Vote Deadline</label>
-        <input id="vote_deadline" type="date" v-model="projectVoteDeadline" />
-        <label for="phase">Phase</label>
-        <input id="phase" type="number" v-model="projectPhase" />
-        <button class="submit-btn" @click="submitProject">Submit</button>
+      <div class="additional-block">
+        <h3>FOLLOWED PJ</h3>
+        <p>{{ followedProjectsCount }}</p>
+      </div>
+      <div class="additional-block">
+        <h3>Onchain Point</h3>
+        <p>{{ onchainPoints }}</p>
       </div>
     </div>
   </div>
+</div>
+
+<div v-if="showProjectAddPopup" class="popup-overlay" @click.self="closeProjectAddPopup">
+  <div class="popup">
+    <div class="popup-inner">
+      <h2 class="popup-title">PJ Add</h2>
+      <label for="logo">Project Logo</label>
+      <input id="logo" type="file" accept="image/*" @change="previewLogo" />
+      <div class="logo-preview" v-if="logoPreviewUrl">
+        <img :src="logoPreviewUrl" alt="Logo Preview" />
+      </div>
+      <label for="name">Project Name</label>
+      <input id="name" type="text" v-model="projectName" />
+      <label for="description">Description</label>
+      <textarea id="description" v-model="projectDescription"></textarea>
+      <label for="description_img">Project Description Image</label>
+      <input id="description_img" type="file" accept="image/*" @change="previewDescriptionImage" />
+      <div class="description-img-preview" v-if="descriptionImagePreviewUrl">
+        <img :src="descriptionImagePreviewUrl" alt="Description Image Preview" />
+      </div>
+      <label for="deadline">Deadline</label>
+      <input id="deadline" type="date" v-model="projectDeadline" />
+      <label for="vote_deadline">Vote Deadline</label>
+      <input id="vote_deadline" type="date" v-model="projectVoteDeadline" />
+      <label for="phase">Phase</label>
+      <input id="phase" type="number" v-model="projectPhase" />
+      <button class="submit-btn" @click="submitProject">Submit</button>
+    </div>
+  </div>
+</div>
 </div>
 </div>
 </template>
@@ -208,6 +182,7 @@ export default {
   
   data() {    
     return {
+      onchainPoints: 0,
       followedProjects: [],
       selectedItem: 0,
       menuItems: [
@@ -220,6 +195,7 @@ export default {
   },
   mounted() {
     this.fetchProjects();
+    this.fetchOnchainPoints();
   },
   computed: {
   filteredProjects() {
@@ -227,8 +203,31 @@ export default {
       return project.following === true;
     });
   },
+  followedProjectsCount() {
+    return this.filteredProjects.length;
+  },
   },
   methods: {
+
+    async fetchOnchainPoints() {
+  try {
+    const userAddress = await window.ethereum.request({ method: "eth_accounts" });
+    const userResponse = await axios.get(
+      `https://cardene7.pythonanywhere.com/api/users/${userAddress[0]}`
+    );
+    const currentUser = userResponse.data;
+
+    const response = await axios.get("https://cardene7.pythonanywhere.com/api/votes/");
+    const votes = response.data;
+
+    const matchingVotes = votes.filter((vote) => vote.users === currentUser.pk);
+    this.onchainPoints = matchingVotes.length;
+  } catch (error) {
+    console.error("Error fetching onchain points:", error);
+  }
+},
+
+
     selectMenuItem(index) {
       this.selectedItem = index;
       this.closeProjectAddPopup();
