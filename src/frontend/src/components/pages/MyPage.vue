@@ -91,11 +91,11 @@
     <div class="additional-blocks">
       <div class="additional-block">
         <h3>FOLLOWED PJ</h3>
-        <p>{{ followedProjectsCount }}</p>
+        <p>{{ followedProjectsCount }} PJ</p>
       </div>
       <div class="additional-block">
         <h3>Onchain Point</h3>
-        <p>{{ onchainPoints }}</p>
+        <p>{{ onchainPoints }} BCP</p>
       </div>
     </div>
   </div>
@@ -725,7 +725,7 @@ label[for="purpose"] {
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  padding: 20px;
+  padding: 80px;
   background-color: #f5f5f5;
   border-radius: 10px;
 }
@@ -738,7 +738,7 @@ label[for="purpose"] {
   gap: 10px;
   padding: 20px;
   width: 100%;
-  max-width: 400px;
+  max-width: 800px;
   background-color: #ffffff;
   border: 1px solid #e0e0e0;
   border-radius: 10px;
