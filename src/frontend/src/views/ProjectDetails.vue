@@ -292,7 +292,7 @@ async submitVote(proposalId, vote) {
 .project-image img {
   width: 100%;
   height: auto;
-  max-height: 400px; /* 追加：最大高さの設定 */
+  max-height: 250px; /* 追加：最大高さの設定 */
   object-fit: contain; /* 変更：画像サイズを調整 */
   border-radius: 5px;
   margin-bottom: 20px;
@@ -480,7 +480,7 @@ margin-top: 20px;
 .project-overview img {
   width: 100%;
   height: auto;
-  max-height: 400px;
+  max-height: 250px;
   object-fit: contain;
   border-radius: 5px;
   margin-bottom: 20px;
