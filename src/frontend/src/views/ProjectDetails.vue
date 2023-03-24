@@ -30,6 +30,7 @@
       </div>
     </div>
     <div class="project-overview">
+      <img :src="project.description_img" alt="Project description image" /> 
       <h3>Project Overview</h3>
       <p>{{ project.description }}</p>
     </div>
@@ -474,6 +475,18 @@ margin-top: 20px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   max-width: 500px;
   width: 100%;
+}
+
+.project-overview img {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: contain;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  position: relative;
+  top: 10px;
+  right: 150px; /* 値を増やして画像をもう少し左に移動 */
 }
 
 @media (max-width: 768px) {
