@@ -118,24 +118,36 @@
       
   <div v-if="showProjectAddPopup" class="popup-overlay" @click.self="closeProjectAddPopup">
     <div class="popup">
-      <h2 class="popup-title">PJ Add</h2>
-      <label for="name">PJ Name</label>
-      <input id="name" type="text" v-model="projectName" />
-      <label for="description">Description</label>
-      <textarea id="description" v-model="projectDescription"></textarea>
-      <label for="purpose">Purpose</label>
-      <input id="purpose" type="text" v-model="projectPurpose" />
-      <label for="deadline">Deadline</label>
-      <input id="deadline" type="date" v-model="projectDeadline" />
-      <label for="vote_deadline">Vote Deadline</label>
-      <input id="vote_deadline" type="date" v-model="projectVoteDeadline" />
-      <label for="phase">Phase</label>
-      <input id="phase" type="number" v-model="projectPhase" />
-      <button class="submit-btn" @click="submitProject">Submit</button>
+      <div class="popup-inner">
+        <h2 class="popup-title">PJ Add</h2>
+        <label for="logo">Project Logo</label>
+        <input id="logo" type="file" accept="image/*" @change="previewLogo" />
+        <div class="logo-preview" v-if="logoPreviewUrl">
+          <img :src="logoPreviewUrl" alt="Logo Preview" />
+        </div>
+        <label for="name">Project Name</label>
+        <input id="name" type="text" v-model="projectName" />
+        <label for="description">Description</label>
+        <textarea id="description" v-model="projectDescription"></textarea>
+
+        <label for="description_img">Project Description Image</label>
+        <input id="description_img" type="file" accept="image/*" @change="previewDescriptionImage" />
+        <div class="description-img-preview" v-if="descriptionImagePreviewUrl">
+          <img :src="descriptionImagePreviewUrl" alt="Description Image Preview" />
+        </div>
+
+        <label for="deadline">Deadline</label>
+        <input id="deadline" type="date" v-model="projectDeadline" />
+        <label for="vote_deadline">Vote Deadline</label>
+        <input id="vote_deadline" type="date" v-model="projectVoteDeadline" />
+        <label for="phase">Phase</label>
+        <input id="phase" type="number" v-model="projectPhase" />
+        <button class="submit-btn" @click="submitProject">Submit</button>
+      </div>
     </div>
   </div>
-  </div>
-  </div>
+</div>
+</div>
 </template>
 
 <script>
@@ -157,6 +169,9 @@ export default {
     const projectDeadline = ref("");
     const projectPhase = ref(null);
     const account = ref(null);
+    const logoData = ref(null);
+    const descriptionImagePreviewUrl = ref("");
+    const descriptionImageData = ref(null);
 
     onMounted(async () => {
       account.value = await getAccount();
@@ -174,6 +189,9 @@ export default {
       projectDeadline,
       projectPhase,
       account,
+      logoData,
+      descriptionImagePreviewUrl,
+      descriptionImageData,
     };
   },
   data() {    
@@ -213,20 +231,6 @@ export default {
     goToMyProjectAdd() {
       this.router.push("/pj-add");
     },
-    previewLogo(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    this.logoPreviewUrl = e.target.result;
-    const base64Image = e.target.result.replace(/^data:image\/(png|jpg|jpeg);base64,/, '');
-    this.logoData = {
-      file: base64Image,
-      type: file.type,
-    };
-  };
-  reader.readAsDataURL(file);
-},
 
 onImageUploaded(response) {
       this.logoPreviewUrl = response.info.secure_url;
@@ -246,28 +250,54 @@ onImageUploaded(response) {
       }
     },
 
-    async submitProject() {
-  try {
-    const walletAddress = await window.ethereum.request({ method: "eth_accounts" });
-      const userResponse = await axios.get(`https://cardene7.pythonanywhere.com/api/users/${walletAddress[0]}`);
-      const currentUser = userResponse.data;
-    const requestData = {
-      title: this.projectName,
-      // logo: this.getRandomImageURL(),
-      description: this.projectDescription,
-      purpose: this.projectPurpose,
-      deadline: this.projectDeadline,
-      vote_deadline: this.projectVoteDeadline,
-      phase: this.projectPhase,
-      invalid: false,
-      users: [currentUser.pk,],
-    };
 
-    await axios.post('https://cardene7.pythonanywhere.com/api/projects/', requestData);
+    previewLogo(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.logoPreviewUrl = e.target.result;
+        this.logoData = file;
+      };
+      reader.readAsDataURL(file);
+    },
+    previewDescriptionImage(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.descriptionImagePreviewUrl = e.target.result;
+        this.descriptionImageData = file;
+      };
+      reader.readAsDataURL(file);
+    },
+    async submitProject() {
+      try {
+        const walletAddress = await window.ethereum.request({ method: "eth_accounts" });
+        const userResponse = await axios.get(`https://cardene7.pythonanywhere.com/api/users/${walletAddress[0]}`);
+        const currentUser = userResponse.data;
+        
+        const formData = new FormData();
+    formData.append("logo", this.logoData);
+    formData.append("title", this.projectName);
+    formData.append("description", this.projectDescription);
+    formData.append("description_img", this.descriptionImageData);
+    // formData.append("purpose", this.projectPurpose);
+    formData.append("deadline", this.projectDeadline);
+    formData.append("vote_deadline", this.projectVoteDeadline);
+    formData.append("phase", this.projectPhase);
+    formData.append("invalid", false);
+    formData.append("users", currentUser.pk);
+
+    await axios.post('https://cardene7.pythonanywhere.com/api/projects/', formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
     this.projectName = '';
     this.projectDescription = '';
-    this.projectPurpose = '';
+    // this.projectPurpose = '';
     this.projectDeadline = '';
     this.projectVoteDeadline = '';
     this.projectPhase = null;
@@ -276,10 +306,11 @@ onImageUploaded(response) {
     console.error(error);
   }
 },
-getRandomImageURL() {
-  const randomNumber = Math.floor(Math.random() * 1000);
-  return `https://picsum.photos/id/${randomNumber}/200/300`;
-},
+
+// getRandomImageURL() {
+//   const randomNumber = Math.floor(Math.random() * 1000);
+//   return `https://picsum.photos/id/${randomNumber}/200/300`;
+// },
   },
 };
 </script>
@@ -450,21 +481,25 @@ getRandomImageURL() {
 }
 
 .popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #fff;
-  padding: 20px;
-  width: 80%;
-  max-width: 400px;
-  border-radius: 5px;
-  z-index: 20;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    width: 80%;
+    max-width: 400px;
+    border-radius: 5px;
+    z-index: 20;
+    max-height: 90%;
+    overflow-y: auto;
+  }
 
+  .popup-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
 .popup-title {
   font-size: 1.5rem;
   margin-bottom: 10px;
@@ -474,7 +509,10 @@ getRandomImageURL() {
   cursor: pointer;
 }
 
-.logo-preview {
+.logo-preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -486,10 +524,19 @@ getRandomImageURL() {
   cursor: pointer;
 }
 
-.logo-preview img {
+.description-img-preview img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 200px;
+  background-color: #f8f9fa;
+  border: 1px dashed #ccc;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 label {
