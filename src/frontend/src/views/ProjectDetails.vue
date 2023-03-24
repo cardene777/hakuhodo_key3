@@ -59,8 +59,11 @@
     <div class="modal-content">
       <h4>{{ selectedProposal.title }}</h4>
       <p>{{ selectedProposal.description }}</p>
-      <p>Agree: {{ voteCounts.agree }}</p>
-      <p>Disagree: {{ voteCounts.disagree }}</p>
+      <div class="progress">
+  <div class="progress-agree" :style="{width: agreePercentage + '%'}"></div>
+  <div class="progress-disagree" :style="{width: disagreePercentage + '%'}"></div>
+</div>
+<p1>Agree: {{ voteCounts.agree }} Disagree: {{ voteCounts.disagree }}</p1>
       <div class="vote-buttons">
         <button
   class="agree-btn"
@@ -86,6 +89,7 @@
       <h4>Create a New Post</h4>
       <input type="text" v-model="newPost.title" placeholder="Title" />
       <textarea v-model="newPost.description" placeholder="Description"></textarea>
+      <input type="date" v-model="newPost.vote_deadline" />
       <div class="create-post-buttons">
         <button class="submit-btn" @click="submitPost">Submit</button>
         <button class="cancel-btn" @click="closeCreatePostModal">Cancel</button>
@@ -118,6 +122,7 @@ export default {
       newPost: {
         title: "",
         description: "",
+        vote_deadline: "",
       },
       showCreatePostModal: false,
       menuItems: [
@@ -138,6 +143,12 @@ computed: {
       currentDate() {
         return new Date().toISOString().slice(0, 10);
       },
+      agreePercentage() {
+    return (this.voteCounts.agree / (this.voteCounts.agree + this.voteCounts.disagree)) * 100;
+  },
+  disagreePercentage() {
+    return (this.voteCounts.disagree / (this.voteCounts.agree + this.voteCounts.disagree)) * 100;
+  },
     },
 
 methods: {
@@ -181,6 +192,7 @@ async fetchProjectDetails(pk) {
         projects: parseInt(this.$route.params.pk),
         title: this.newPost.title,
         description: this.newPost.description,
+        vote_deadline: this.newPost.vote_deadline,
       };
 
       await axios.post("https://cardene7.pythonanywhere.com/api/proposals/", postData);
@@ -445,6 +457,12 @@ align-items: center;
   width: 90%;
   margin: auto;
 }
+.modal-content p1{
+  display: flex;
+  position: relative;
+  left: 150px;
+  padding: 10px;
+}
 
 .create-post-buttons {
   display: flex;
@@ -598,4 +616,39 @@ margin-top: 20px;
   display: flex;
   align-items: center;
 }
+.modal-content input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.modal-content textarea {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  resize: vertical;
+}
+
+.progress {
+  width: 100%;
+  height: 15px;
+  background-color: #ccc;
+  display: flex;
+  border-radius: 5px;
+}
+
+.progress-agree {
+  background-color: #28a745;
+}
+
+.progress-disagree {
+  background-color: #dc3545;
+}
+
 </style>
