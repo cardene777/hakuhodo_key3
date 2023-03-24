@@ -43,12 +43,12 @@
               </h3>
               <p>{{ project.members }} members</p>
               <button
-                class="follow-btn"
-                :class="{ 'following': project.following }"
-                @click="toggleFollow(index)"
-              >
-                {{ project.following ? "FOLLOWER" : "Follow" }}
-              </button>
+  :class="['follow-btn', project.following ? 'following' : '']"
+  @click="toggleFollow(index)"
+>
+  {{ project.following ? "Now following" : "Follow" }}
+</button>
+
             </div>
           </div>
         </div>
@@ -82,19 +82,20 @@
           <span class="members">members {{ project.users }}</span>
         </div>
         <button
-          v-if="!project.following"
-          class="follow-btn"
-          @click="toggleFollow(index)"
-        >
-          Follow
-        </button>
-        <button
-          v-else
-          class="follow-btn following"
-          @click="toggleFollow(index)"
-        >
-          Follower
-        </button>
+  v-if="!project.following"
+  class="follow-btn"
+  @click="toggleFollow(index)"
+>
+  Follow
+</button>
+<button
+  v-else
+  class="follow-btn following"
+  @click="toggleFollow(index)"
+>
+  Follower
+</button>
+
       </div>
     </div>
   </div>
@@ -140,6 +141,7 @@ import axios from "axios";
 import { getAccount} from "@wagmi/core";
 
 export default {
+  
   setup() {
     const router = useRouter();
     const showProjectAddPopup = ref(false);
@@ -177,6 +179,7 @@ export default {
       descriptionImageData,
     };
   },
+  
   data() {    
     return {
       followedProjects: [],
@@ -218,16 +221,58 @@ export default {
 onImageUploaded(response) {
       this.logoPreviewUrl = response.info.secure_url;
     },
-    toggleFollow(index) {
-      this.projects[index].following = !this.projects[index].following;
-    },
+
+    async toggleFollow(index) {
+  const project = this.projects[index];
+  const walletAddress = await window.ethereum.request({ method: "eth_accounts" });
+  const userResponse = await axios.get(`https://cardene7.pythonanywhere.com/api/users/${walletAddress[0]}`);
+  const currentUser = userResponse.data;
+
+  if (project.following) {
+    // Unfollow the project
+    const follwerIndex = project.follwer.data.indexOf(currentUser.pk);
+    project.follwer.data.splice(follwerIndex, 1);
+  } else {
+    // Follow the project
+    if (project.follwer) {
+      project.follwer.data.push(currentUser.pk);
+    } else {
+      project.follwer = { data: [currentUser.pk] };
+    }
+  }
+
+  project.following = !project.following;
+  this.updateProject(project);
+},
+
+async updateProject(project) {
+  try {
+    // Clone the project object and remove the 'logo' property
+    const updatedProject = { ...project };
+    delete updatedProject.logo;
+
+    const response = await axios.put(`https://cardene7.pythonanywhere.com/api/projects/${project.pk}/`, updatedProject);
+    console.log('Project updated successfully:', response);
+  } catch (error) {
+    console.error('Error updating project:', error);
+  }
+},
+
+
+
     redirectToGasFee() {
       window.location.href = "https://portal.astar.network/astar/assets";
     },
     async fetchProjects() {
   try {
     const response = await axios.get("https://cardene7.pythonanywhere.com/api/projects/");
-    this.projects = response.data;
+    const walletAddress = await window.ethereum.request({ method: "eth_accounts" });
+    const userResponse = await axios.get(`https://cardene7.pythonanywhere.com/api/users/${walletAddress[0]}`);
+    const currentUser = userResponse.data;
+    this.projects = response.data.map(project => {
+      project.following = project.follwer && project.follwer.data.includes(currentUser.pk);
+      return project;
+    });
   } catch (error) {
     console.error("Error fetching project:", error);
   }
