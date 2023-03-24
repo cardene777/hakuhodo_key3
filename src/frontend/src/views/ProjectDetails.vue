@@ -40,11 +40,15 @@
         <button class="create-post-btn" @click="openCreatePostModal">Create Post</button>
       </div>
       <div class="proposal-block" v-for="proposal in proposals" :key="proposal.id">
-        <h5>{{ proposal.title }}</h5>
-        <p>{{ proposal.description }}</p>
-        <button class="vote-btn" @click="openVoteModal(proposal)">Vote</button>
+      <h5>{{ proposal.title }}</h5>
+      <p>{{ proposal.description }}</p>
+      <p class="vote-deadline">Vote Deadline: {{ proposal.vote_deadline }}</p>
+      <div class="status-button" :class="{ 'active': isActive(proposal.vote_deadline), 'closed': !isActive(proposal.vote_deadline) }">
+        {{ isActive(proposal.vote_deadline) ? "Active" : "Closed" }}
       </div>
+      <button class="vote-btn" @click="openVoteModal(proposal)">Vote</button>
     </div>
+  </div>
   </div>
 </div>
 
@@ -113,7 +117,19 @@ async mounted() {
   this.fetchProjectDetails(this.$route.params.pk);
     this.fetchProposals(this.$route.params.pk);
 },
+
+computed: {
+      currentDate() {
+        return new Date().toISOString().slice(0, 10);
+      },
+    },
+
 methods: {
+
+  isActive(deadline) {
+        return this.currentDate <= deadline;
+      },
+
 redirectToMyPage() {
 this.$router.push("/my-page");
 },
@@ -358,6 +374,7 @@ async submitVote(proposalId, vote) {
   margin-top: 20px;
   margin-left: auto;
   margin-right: auto;
+  position: relative;
 }
 
 .create-post-btn {
@@ -489,37 +506,27 @@ margin-top: 20px;
   right: 150px; /* 値を増やして画像をもう少し左に移動 */
 }
 
-@media (max-width: 768px) {
-.sidebar {
-width: 200px;
-}
+.vote-deadline {
+    font-size: 12px;
+    color: #999;
+  }
 
-.menu li {
-padding: 10px;
-}
+  .status-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    padding: 5px;
+    font-size: 12px;
+    border-radius: 3px;
+  }
 
-.logout {
-left: 10px;
-}
+  .status-button.active {
+    background-color: #28a745;
+    color: white;
+  }
 
-.main {
-padding: 10px;
-}
-
-.project-image img {
-width: 70%;
-}
-
-.project-info h2 {
-font-size: 18px;
-}
-
-.follow-btn {
-padding: 5px 10px;
-}
-
-.project-overview h3 {
-font-size: 20px;
-}
-}
+  .status-button.closed {
+    background-color: #ccc;
+    color: white;
+  }
 </style>

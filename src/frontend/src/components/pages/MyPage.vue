@@ -76,7 +76,7 @@
             {{ project.title }}
             </router-link>
           </h3>
-          <span class="members">{{ project.users }} members</span>
+          <span class="members">members {{ project.users }}</span>
         </div>
         <button
           v-if="!project.following"
