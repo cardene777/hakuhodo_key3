@@ -59,8 +59,20 @@
       <p>Agree: {{ voteCounts.agree }}</p>
       <p>Disagree: {{ voteCounts.disagree }}</p>
       <div class="vote-buttons">
-        <button class="agree-btn" @click="submitVote(selectedProposal.pk, true)">Agree</button>
-        <button class="disagree-btn" @click="submitVote(selectedProposal.pk, false)">Disagree</button>
+        <button
+  class="agree-btn"
+  :disabled="userHasVoted"
+  @click="userHasVoted ? alert('You have already voted on this proposal.') : submitVote(selectedProposal.pk, true)"
+>
+  Agree
+</button>
+<button
+  class="disagree-btn"
+  :disabled="userHasVoted"
+  @click="userHasVoted ? alert('You have already voted on this proposal.') : submitVote(selectedProposal.pk, false)"
+>
+  Disagree
+</button>
       </div>
       <button class="close-modal" @click="closeVoteModal">Close</button>
     </div>
@@ -84,6 +96,7 @@ import axios from "axios";
 export default {
   data() {
     return {
+      userHasVoted: false,
       selectedItem: null,
       project: {
         logo: "",
@@ -191,11 +204,13 @@ async fetchProposals(pk) {
 },
 logout() {
 },
+
 async openVoteModal(proposal) {
-      this.selectedProposal = proposal;
+  this.selectedProposal = proposal;
       this.showVoteModal = true;
       await this.fetchVoteCounts(proposal.id);
-    },
+},
+
 closeVoteModal() {
 this.showVoteModal = false;
 },
@@ -226,16 +241,27 @@ async submitVote(proposalId, vote) {
   },
   async fetchVoteCounts(proposalId) {
   try {
+    const userAddress = await window.ethereum.request({ method: "eth_accounts" });
+    const userResponse = await axios.get(
+      `https://cardene7.pythonanywhere.com/api/users/${userAddress[0]}`
+    );
+    const currentUser = userResponse.data;
+
     const response = await axios.get(
       `https://cardene7.pythonanywhere.com/api/votes/?proposal=${proposalId}`
     );
     const votes = response.data;
+
+    // Check if the current user has voted
+    this.userHasVoted = votes.some(vote => vote.users === currentUser.pk && vote.proposal === this.selectedProposal.pk);
+
     this.voteCounts.agree = votes.filter((vote) => vote.vote === true && vote.proposal === this.selectedProposal.pk).length;
     this.voteCounts.disagree = votes.filter((vote) => vote.vote === false && vote.proposal === this.selectedProposal.pk).length;
   } catch (error) {
     console.error("Error fetching vote counts:", error);
   }
 },
+
   },
 };
 
