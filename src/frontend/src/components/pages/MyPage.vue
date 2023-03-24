@@ -49,14 +49,14 @@
         <button
   v-if="!project.following"
   class="follow-btn"
-  @click="toggleFollow(index)"
+  @click="toggleFollow(project)"
 >
   Follow
 </button>
 <button
   v-else
   class="follow-btn following"
-  @click="toggleFollow(index)"
+  @click="toggleFollow(project)"
 >
   Follower
 </button>
@@ -95,17 +95,18 @@
         <button
   v-if="!project.following"
   class="follow-btn"
-  @click="toggleFollow(index)"
+  @click="toggleFollow(project)"
 >
   Follow
 </button>
 <button
   v-else
   class="follow-btn following"
-  @click="toggleFollow(index)"
+  @click="toggleFollow(project)"
 >
   Follower
 </button>
+
 
       </div>
     </div>
@@ -233,8 +234,8 @@ onImageUploaded(response) {
       this.logoPreviewUrl = response.info.secure_url;
     },
 
-    async toggleFollow(index) {
-  const project = this.projects[index];
+    async toggleFollow(project) {
+  // const project = this.projects[index];
   const walletAddress = await window.ethereum.request({ method: "eth_accounts" });
   const userResponse = await axios.get(`https://cardene7.pythonanywhere.com/api/users/${walletAddress[0]}`);
   const currentUser = userResponse.data;
