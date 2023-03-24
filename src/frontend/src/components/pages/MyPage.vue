@@ -30,28 +30,39 @@
       <!-- 選択されたメニューに応じてコンテンツを表示 -->
       <div v-if="selectedItem === 0" class="my-project-list">
         <h2>My Projects</h2>
-        <div class="project-container">
-          <div v-for="(project, index) in followedProjects" :key="index" class="project-item">
-            <div class="project-image">
-              <img :src="project.image" alt="Project image" />
-            </div>
-            <div class="project-info">
-              <h3>
-                <router-link :to="{ name: 'project-details', params: { id: index } }">
-                  {{ project.name }}
-                </router-link>
-              </h3>
-              <p>{{ project.members }} members</p>
-              <button
-  :class="['follow-btn', project.following ? 'following' : '']"
+    <div class="project-container">
+      <div v-for="(project, index) in filteredProjects" :key="index" class="project-item">
+  <div class="project-image">
+    <img :src="project.logo" alt="Project image" />
+  </div>
+  <div class="project-info">
+    <div class="phase-container">
+      <div class="phase" :class="`phase-color-${project.phase}`">{{ project.phase }}</div>
+    </div>
+          <h3>
+            <router-link :to="`/pj-info/${project.pk}`">
+            {{ project.title }}
+            </router-link>
+          </h3>
+          <span class="members">members {{ project.users }}</span>
+        </div>
+        <button
+  v-if="!project.following"
+  class="follow-btn"
   @click="toggleFollow(index)"
 >
-  {{ project.following ? "Now following" : "Follow" }}
+  Follow
+</button>
+<button
+  v-else
+  class="follow-btn following"
+  @click="toggleFollow(index)"
+>
+  Follower
 </button>
 
-            </div>
-          </div>
-        </div>
+      </div>
+    </div>
         <button
           class="add-btn"
           @click="showProjectAddPopup = true"
@@ -197,11 +208,11 @@ export default {
     this.fetchProjects();
   },
   computed: {
-    filteredProjects() {
-      return this.projects.filter((project) => {
-        return project.active === true;
-      });
-    },
+  filteredProjects() {
+    return this.projects.filter((project) => {
+      return project.following === true;
+    });
+  },
   },
   methods: {
     selectMenuItem(index) {
@@ -493,6 +504,7 @@ async updateProject(project) {
   cursor: pointer;
   transition: background-color 0.3s;
   margin: auto;
+  margin-top: 20px;
 }
 
 .popup-overlay {
