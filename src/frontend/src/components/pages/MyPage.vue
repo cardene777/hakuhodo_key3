@@ -274,6 +274,7 @@ async updateProject(project) {
     // Clone the project object and remove the 'logo' property
     const updatedProject = { ...project };
     delete updatedProject.logo;
+    delete updatedProject.description_img
 
     const response = await axios.put(`https://cardene7.pythonanywhere.com/api/projects/${project.pk}/`, updatedProject);
     console.log('Project updated successfully:', response);
