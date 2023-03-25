@@ -6,17 +6,18 @@
       </div>
       <div class="header__bottom">
         <!-- 下段のヘッダー -->
-        <button v-if="isConnected && !gmail" class="header__login-btn" @click="showModal = true">ログイン</button>
+        <button v-if="isConnected && !gmail" class="header__login-btn" @click="showModal = true">Google Login</button>
         <p v-else>
           <w3m-core-button />
         </p>
+        <button v-if="isConnected" class="header__my-page-btn" @click="$router.push('/my-page')">MyPage</button>
       </div>
     </header>
     <div class="login-modal" v-if="showModal">
-      <h2 class="login-modal__title">ログイン</h2>
+      <h2 class="login-modal__title">Login</h2>
       <GoogleLogin :callback="callback"/>
       <div>
-        <button class="close-btn" @click="showModal = false">閉じる</button>
+        <button class="close-btn" @click="showModal = false">close</button>
       </div>
     </div>
 
@@ -203,8 +204,8 @@ export default {
 
 .header__bottom {
   background-color: #ffffff;
-  height: 80px;
-  border-bottom: 1px solid #cccccc;
+  height: 110px;
+  border-bottom: 2px solid #cccccc;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -215,6 +216,9 @@ export default {
   padding: 0.5rem 2rem;
   font-size: 1rem;
   cursor: pointer;
+  border-radius: 10px;
+  background-color: #3B00DD;
+    color: #fff;
 }
 
 .login-modal {
@@ -353,4 +357,15 @@ letter-spacing: 0.25px;
 
 color: rgba(0, 0, 0, 0.6);
 }
+.header__my-page-btn {
+    padding: 0.5rem 2rem;
+    font-size: 1rem;
+    background-color: #3B00DD;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    margin-left: 1rem;
+    cursor: pointer;
+    border-radius: 10px;
+  }
 </style>

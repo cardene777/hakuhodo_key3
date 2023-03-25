@@ -40,7 +40,7 @@
     <div class="proposal-section">
       <div class="proposal-header">
         <h4 class="proposal-list-title">Proposal List</h4>
-        <button class="create-post-btn" @click="openCreatePostModal">Create Post</button>
+        <button class="create-post-btn" @click="openCreatePostModal">Create Proposal</button>
       </div>
       <div class="proposal-block" v-for="proposal in proposals" :key="proposal.id">
       <h5>{{ proposal.title }}</h5>
