@@ -1,6 +1,5 @@
 <template>
   <div class="app">
-    <!-- サイドバー -->
     <div class="sidebar">
       <ul class="menu">
         <li
@@ -14,117 +13,112 @@
         </li>
       </ul>
       <div class="logout" @click="logout">
-    <font-awesome-icon icon="sign-out-alt" class="mr-1" />
-    Log Out
-  </div>
+        <font-awesome-icon icon="sign-out-alt" class="mr-1" />
+        Log Out
+      </div>
     </div>
-
-    <!-- メインコンテンツ -->
     <div class="main">
-      <!-- 検索欄 -->
       <div class="search-bar">
-        <h1 class="welcome-guest">Welcome to {{ account }}</h1>
+        <h1 class="welcome-guest">Welcome to {{ account }} </h1>
         <input class="search-input" type="text" placeholder="Search" />
       </div>
+      <small class="current-date">{{ currentDate }}</small>
 
-      <!-- 選択されたメニューに応じてコンテンツを表示 -->
-      <div v-if="selectedItem === 0" class="my-project-list">
-        <h2>My Projects</h2>
-        <div class="project-container">
-          <div v-for="(project, index) in followedProjects" :key="index" class="project-item">
-            <div class="project-image">
-              <img :src="project.image" alt="Project image" />
-            </div>
-            <div class="project-info">
-              <h3>
-                <router-link :to="{ name: 'project-details', params: { id: index } }">
-                  {{ project.name }}
-                </router-link>
-              </h3>
-              <p>{{ project.members }} members</p>
-              <button
-                class="follow-btn"
-                :class="{ 'following': project.following }"
-                @click="toggleFollow(index)"
-              >
-                {{ project.following ? "FOLLOWER" : "Follow" }}
-              </button>
-            </div>
-          </div>
-        </div>
-        <button
-          class="add-btn"
-          @click="showProjectAddPopup = true"
-        >
-          <font-awesome-icon icon="plus" class="mr-1" />
-          MY Project Add
-        </button>
+<!-- MY PROJECT -->
+<div v-if="selectedItem === 0" class="my-project-list">
+  <div class="project-container">
+    <div v-for="(project, index) in filteredProjects" :key="index" class="project-item">
+      <div class="project-image">
+        <img :src="project.logo" alt="Project image" />
       </div>
-      
-      <!-- ProjectList -->
-      <!-- 選択されたメニューに応じてコンテンツを表示 -->
-      <div v-if="selectedItem === 1" class="project-list">
-    <h2>Project List</h2>
-    <div class="project-container">
-      <div v-for="(project, index) in projects" :key="index" class="project-item">
-        <div class="project-image">
-          <img :src="project.logo" alt="Project image" />
+      <div class="project-info">
+        <div class="phase-container">
+          <div class="phase" :class="`phase-color-${project.phase}`">{{ project.phase }}</div>
         </div>
-        <div class="project-info">
-          <h3>
-            <router-link :to="`/pj-info/${project.pk}`">
+        <h3>
+          <router-link :to="`/pj-info/${project.pk}`">
             {{ project.title }}
-            </router-link>
-          </h3>
-          <span class="members">{{ project.users }} members</span>
+          </router-link>
+        </h3>
+        <span class="members">members {{ project.users }}</span>
+      </div>
+      <button v-if="!project.following" class="follow-btn" @click="toggleFollow(project)">
+        Follow
+      </button>
+      <button v-else class="follow-btn following" @click="toggleFollow(project)">
+        Follower
+      </button>
+    </div>
+  </div>
+  <button class="add-btn" @click="showProjectAddPopup = true">
+    <font-awesome-icon icon="plus" class="mr-1" />
+    MY Project Add
+  </button>
+</div>
+
+<!-- PROJECT LIST -->
+<div v-if="selectedItem === 1" class="project-list">
+  <div class="project-container">
+    <div v-for="(project, index) in projects" :key="index" class="project-item">
+      <div class="project-image">
+        <img :src="project.logo" alt="Project image" />
+      </div>
+      <div class="project-info">
+        <div class="phase-container">
+          <div class="phase" :class="`phase-color-${project.phase}`">{{ project.phase }}</div>
         </div>
-        <button
-          v-if="!project.following"
-          class="follow-btn"
-          @click="toggleFollow(index)"
-        >
-          Follow
-        </button>
-        <button
-          v-else
-          class="follow-btn following"
-          @click="toggleFollow(index)"
-        >
-          Follower
-        </button>
+        <h3>
+          <router-link :to="`/pj-info/${project.pk}`">
+            {{ project.title }}
+          </router-link>
+        </h3>
+        <span class="members">members {{ project.users }}</span>
+      </div>
+      <button v-if="!project.following" class="follow-btn" @click="toggleFollow(project)">
+        Follow
+      </button>
+      <button v-else class="follow-btn following" @click="toggleFollow(project)">
+        Follower
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- DAO PASS -->
+<div v-if="selectedItem === 2" class="dao-pass">
+  <div class="dao-pass-block">
+    <h2>MY Reward</h2>
+    <div class="additional-blocks">
+      <div class="additional-block">
+        <h3>FOLLOWED PJ</h3>
+        <p>{{ followedProjectsCount }} PJ</p>
+      </div>
+      <div class="additional-block">
+        <h3>Onchain Point</h3>
+        <p>{{ onchainPoints }} BCP</p>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- DAOPASS -->
-      <!-- <div v-if="selectedItem === 2" class="dao-pass">
-    <h2>My DAO PASS</h2>
-    <button class="get-gas-fee-btn" @click="redirectToGasFee">
-      ガス代の取得はこちら
-    </button>
-    <button class="free-mint-btn">
-      <font-awesome-icon icon="plus" class="mr-1" />
-      FREE MINT
-    </button>
-    <div class="dao-pass-description">
-      <h3>DAO PASSを保有すると</h3>
-      <ul>
-        <li>✅分散型Projectに参加できます</li>
-        <li>✅提案に投票できます</li>
-        <li>✅ポイントは貯まります</li>
-      </ul>
-    </div>
-  </div> -->
-      
-  <div v-if="showProjectAddPopup" class="popup-overlay" @click.self="closeProjectAddPopup">
-    <div class="popup">
+<div v-if="showProjectAddPopup" class="popup-overlay" @click.self="closeProjectAddPopup">
+  <div class="popup">
+    <div class="popup-inner">
       <h2 class="popup-title">PJ Add</h2>
-      <label for="name">PJ Name</label>
+      <label for="logo">Project Logo</label>
+      <input id="logo" type="file" accept="image/*" @change="previewLogo" />
+      <div class="logo-preview" v-if="logoPreviewUrl">
+        <img :src="logoPreviewUrl" alt="Logo Preview" />
+      </div>
+      <label for="name">Project Name</label>
       <input id="name" type="text" v-model="projectName" />
       <label for="description">Description</label>
       <textarea id="description" v-model="projectDescription"></textarea>
-      <label for="purpose">Purpose</label>
-      <input id="purpose" type="text" v-model="projectPurpose" />
+      <label for="description_img">Project Description Image</label>
+      <input id="description_img" type="file" accept="image/*" @change="previewDescriptionImage" />
+      <div class="description-img-preview" v-if="descriptionImagePreviewUrl">
+        <img :src="descriptionImagePreviewUrl" alt="Description Image Preview" />
+      </div>
       <label for="deadline">Deadline</label>
       <input id="deadline" type="date" v-model="projectDeadline" />
       <label for="vote_deadline">Vote Deadline</label>
@@ -134,17 +128,18 @@
       <button class="submit-btn" @click="submitProject">Submit</button>
     </div>
   </div>
-  </div>
-  </div>
+</div>
+</div>
+</div>
 </template>
 
 <script>
 import { useRouter } from "vue-router";
 import { ref, onMounted } from 'vue';
 import axios from "axios";
-import { getAccount} from "@wagmi/core";
 
 export default {
+  
   setup() {
     const router = useRouter();
     const showProjectAddPopup = ref(false);
@@ -157,9 +152,13 @@ export default {
     const projectDeadline = ref("");
     const projectPhase = ref(null);
     const account = ref(null);
+    const logoData = ref(null);
+    const descriptionImagePreviewUrl = ref("");
+    const descriptionImageData = ref(null);
+    const currentDate = ref(new Date().toLocaleDateString());
 
     onMounted(async () => {
-      account.value = await getAccount();
+      account.value = await window.ethereum.request({ method: "eth_accounts" });
     });
 
     return {
@@ -174,32 +173,61 @@ export default {
       projectDeadline,
       projectPhase,
       account,
+      logoData,
+      descriptionImagePreviewUrl,
+      descriptionImageData,
+      currentDate,
     };
   },
+  
   data() {    
     return {
+      onchainPoints: 0,
       followedProjects: [],
       selectedItem: 0,
       menuItems: [
         { label: 'MY PROJECT', icon: 'project-diagram' },
         { label: 'PROJECT LIST', icon: 'list' },
-        // { label: 'DAO PASS', icon: 'passport' },
-        { label: 'Settings', icon: 'cog' },
+        { label: 'DAO PASS', icon: 'passport' },
       ],
       projects: [],
     };
   },
   mounted() {
     this.fetchProjects();
+    this.fetchOnchainPoints();
   },
   computed: {
-    filteredProjects() {
-      return this.projects.filter((project) => {
-        return project.active === true;
-      });
-    },
+  filteredProjects() {
+    return this.projects.filter((project) => {
+      return project.following === true;
+    });
+  },
+  followedProjectsCount() {
+    return this.filteredProjects.length;
+  },
   },
   methods: {
+
+    async fetchOnchainPoints() {
+  try {
+    const userAddress = await window.ethereum.request({ method: "eth_accounts" });
+    const userResponse = await axios.get(
+      `https://cardene7.pythonanywhere.com/api/users/${userAddress[0]}`
+    );
+    const currentUser = userResponse.data;
+
+    const response = await axios.get("https://cardene7.pythonanywhere.com/api/votes/");
+    const votes = response.data;
+
+    const matchingVotes = votes.filter((vote) => vote.users === currentUser.pk);
+    this.onchainPoints = matchingVotes.length;
+  } catch (error) {
+    console.error("Error fetching onchain points:", error);
+  }
+},
+
+
     selectMenuItem(index) {
       this.selectedItem = index;
       this.closeProjectAddPopup();
@@ -213,61 +241,115 @@ export default {
     goToMyProjectAdd() {
       this.router.push("/pj-add");
     },
-    previewLogo(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    this.logoPreviewUrl = e.target.result;
-    const base64Image = e.target.result.replace(/^data:image\/(png|jpg|jpeg);base64,/, '');
-    this.logoData = {
-      file: base64Image,
-      type: file.type,
-    };
-  };
-  reader.readAsDataURL(file);
-},
 
 onImageUploaded(response) {
       this.logoPreviewUrl = response.info.secure_url;
     },
-    toggleFollow(index) {
-      this.projects[index].following = !this.projects[index].following;
-    },
+
+    async toggleFollow(project) {
+  // const project = this.projects[index];
+  const walletAddress = await window.ethereum.request({ method: "eth_accounts" });
+  const userResponse = await axios.get(`https://cardene7.pythonanywhere.com/api/users/${walletAddress[0]}`);
+  const currentUser = userResponse.data;
+
+  if (project.following) {
+    // Unfollow the project
+    const follwerIndex = project.follwer.data.indexOf(currentUser.pk);
+    project.follwer.data.splice(follwerIndex, 1);
+  } else {
+    // Follow the project
+    if (project.follwer) {
+      project.follwer.data.push(currentUser.pk);
+    } else {
+      project.follwer = { data: [currentUser.pk] };
+    }
+  }
+
+  project.following = !project.following;
+  this.updateProject(project);
+},
+
+async updateProject(project) {
+  try {
+    // Clone the project object and remove the 'logo' property
+    const updatedProject = { ...project };
+    delete updatedProject.logo;
+
+    const response = await axios.put(`https://cardene7.pythonanywhere.com/api/projects/${project.pk}/`, updatedProject);
+    console.log('Project updated successfully:', response);
+  } catch (error) {
+    console.error('Error updating project:', error);
+  }
+},
+
+
+
     redirectToGasFee() {
       window.location.href = "https://portal.astar.network/astar/assets";
     },
     async fetchProjects() {
-      try {
-        const response = await axios.get("https://cardene7.pythonanywhere.com/api/projects/");
-        this.projects = response.data;
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      }
-    },
-
-    async submitProject() {
   try {
+    const response = await axios.get("https://cardene7.pythonanywhere.com/api/projects/");
     const walletAddress = await window.ethereum.request({ method: "eth_accounts" });
-      const userResponse = await axios.get(`https://cardene7.pythonanywhere.com/api/users/${walletAddress[0]}`);
-      const currentUser = userResponse.data;
-    const requestData = {
-      title: this.projectName,
-      // logo: this.getRandomImageURL(),
-      description: this.projectDescription,
-      purpose: this.projectPurpose,
-      deadline: this.projectDeadline,
-      vote_deadline: this.projectVoteDeadline,
-      phase: this.projectPhase,
-      invalid: false,
-      users: [currentUser.pk,],
-    };
+    const userResponse = await axios.get(`https://cardene7.pythonanywhere.com/api/users/${walletAddress[0]}`);
+    const currentUser = userResponse.data;
+    this.projects = response.data.map(project => {
+      project.following = project.follwer && project.follwer.data.includes(currentUser.pk);
+      return project;
+    });
+  } catch (error) {
+    console.error("Error fetching project:", error);
+  }
+},
 
-    await axios.post('https://cardene7.pythonanywhere.com/api/projects/', requestData);
+
+    previewLogo(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.logoPreviewUrl = e.target.result;
+        this.logoData = file;
+      };
+      reader.readAsDataURL(file);
+    },
+    previewDescriptionImage(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.descriptionImagePreviewUrl = e.target.result;
+        this.descriptionImageData = file;
+      };
+      reader.readAsDataURL(file);
+    },
+    async submitProject() {
+      try {
+        const walletAddress = await window.ethereum.request({ method: "eth_accounts" });
+        const userResponse = await axios.get(`https://cardene7.pythonanywhere.com/api/users/${walletAddress[0]}`);
+        const currentUser = userResponse.data;
+        
+        const formData = new FormData();
+    formData.append("logo", this.logoData);
+    formData.append("title", this.projectName);
+    formData.append("description", this.projectDescription);
+    formData.append("description_img", this.descriptionImageData);
+    // formData.append("purpose", this.projectPurpose);
+    formData.append("deadline", this.projectDeadline);
+    formData.append("vote_deadline", this.projectVoteDeadline);
+    formData.append("phase", this.projectPhase);
+    formData.append("invalid", false);
+    formData.append("users", currentUser.pk);
+
+    await axios.post('https://cardene7.pythonanywhere.com/api/projects/', formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
     this.projectName = '';
     this.projectDescription = '';
-    this.projectPurpose = '';
+    // this.projectPurpose = '';
     this.projectDeadline = '';
     this.projectVoteDeadline = '';
     this.projectPhase = null;
@@ -275,10 +357,6 @@ onImageUploaded(response) {
   } catch (error) {
     console.error(error);
   }
-},
-getRandomImageURL() {
-  const randomNumber = Math.floor(Math.random() * 1000);
-  return `https://picsum.photos/id/${randomNumber}/200/300`;
 },
   },
 };
@@ -363,12 +441,14 @@ getRandomImageURL() {
 }
 
 .project-item {
+  position: relative;
   background-color: #f8f9fa;
   border-radius: 5px;
   padding: 10px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  border:2px solid rgba(0, 0, 0, 0.7)
 }
 
 .project-image {
@@ -437,6 +517,7 @@ getRandomImageURL() {
   cursor: pointer;
   transition: background-color 0.3s;
   margin: auto;
+  margin-top: 20px;
 }
 
 .popup-overlay {
@@ -450,21 +531,25 @@ getRandomImageURL() {
 }
 
 .popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #fff;
-  padding: 20px;
-  width: 80%;
-  max-width: 400px;
-  border-radius: 5px;
-  z-index: 20;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    width: 80%;
+    max-width: 400px;
+    border-radius: 5px;
+    z-index: 20;
+    max-height: 90%;
+    overflow-y: auto;
+  }
 
+  .popup-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
 .popup-title {
   font-size: 1.5rem;
   margin-bottom: 10px;
@@ -474,7 +559,10 @@ getRandomImageURL() {
   cursor: pointer;
 }
 
-.logo-preview {
+.logo-preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -486,10 +574,19 @@ getRandomImageURL() {
   cursor: pointer;
 }
 
-.logo-preview img {
+.description-img-preview img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 200px;
+  background-color: #f8f9fa;
+  border: 1px dashed #ccc;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 label {
@@ -575,48 +672,103 @@ label[for="purpose"] {
 .dao-pass-description li i {
   margin-right: 10px;
 }
-/* レスポンシブ対応 */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 200px;
-  }
 
-  .menu li {
-    padding: 10px 5px;
-    font-size: 14px;
-  }
-
-  .logout {
-    left: 10px;
-  }
-
-  .main {
-    padding: 10px;
-  }
-
-  .search-bar input {
-    padding: 5px;
-    font-size: 12px;
-  }
-
-  .project-list h2 {
-    font-size: 1.5rem;
-  }
-
-  .add-btn {
-    padding: 8px 16px;
-    font-size: 14px;
-    margin: 0 auto;
-  }
-  .welcome-guest {
-    font-size: 1.5rem;
-  }
-
-  .search-input {
-    padding: 5px 10px;
-    font-size: 14px;
-    width: 200px;
-  }
+.phase {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: #f8f9fa;
 }
 
+.phase-color-1 {
+  background-color: #EED8EE;
+}
+
+.phase-color-2 {
+  background-color: #E3B8FF;
+}
+
+.phase-color-3 {
+  background-color: #C38FFF;
+}
+
+.phase-color-4 {
+  background-color: #A363FF;
+}
+
+.phase-container {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  display: flex;
+  align-items: center;
+}
+
+.current-date {
+  font-size: 12px;
+  color: #888;
+  display: flex;
+  margin-bottom: 70px;
+}
+
+/* DAO PASS section styles */
+.dao-pass {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 80px;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+}
+
+/* Rectangular block styles */
+.dao-pass-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  width: 100%;
+  max-width: 800px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+}
+
+/* Additional blocks styles */
+.additional-blocks {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+}
+
+/* Individual additional block styles */
+.additional-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  width: 100%;
+  max-width: 180px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+}
+
+/* Titles */
+h2, h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
 </style>

@@ -28,22 +28,30 @@
         <p>{{ project.members }} members</p>
         <button class="follow-btn">Follow</button>
       </div>
+      <div class="phase-container">
+      <div class="phase" :class="`phase-color-${project.phase}`">{{ project.phase }}</div>
+    </div>
     </div>
     <div class="project-overview">
+      <img :src="project.description_img" alt="Project description image" /> 
       <h3>Project Overview</h3>
       <p>{{ project.description }}</p>
     </div>
     <div class="proposal-section">
       <div class="proposal-header">
         <h4 class="proposal-list-title">Proposal List</h4>
-        <button class="create-post-btn" @click="openCreatePostModal">Create Post</button>
+        <button class="create-post-btn" @click="openCreatePostModal">Create Proposal</button>
       </div>
       <div class="proposal-block" v-for="proposal in proposals" :key="proposal.id">
-        <h5>{{ proposal.title }}</h5>
-        <p>{{ proposal.description }}</p>
-        <button class="vote-btn" @click="openVoteModal(proposal)">Vote</button>
+      <h5>{{ proposal.title }}</h5>
+      <p>{{ proposal.description }}</p>
+      <p class="vote-deadline">Vote Deadline: {{ proposal.vote_deadline }}</p>
+      <div class="status-button" :class="{ 'active': isActive(proposal.vote_deadline), 'closed': !isActive(proposal.vote_deadline) }">
+        {{ isActive(proposal.vote_deadline) ? "Active" : "Closed" }}
       </div>
+      <button class="vote-btn" v-if="isActive(proposal.vote_deadline)" @click="openVoteModal(proposal)">Vote</button>
     </div>
+  </div>
   </div>
 </div>
 
@@ -51,11 +59,26 @@
     <div class="modal-content">
       <h4>{{ selectedProposal.title }}</h4>
       <p>{{ selectedProposal.description }}</p>
-      <p>Agree: {{ voteCounts.agree }}</p>
-      <p>Disagree: {{ voteCounts.disagree }}</p>
+      <div class="progress">
+  <div class="progress-agree" :style="{width: agreePercentage + '%'}"></div>
+  <div class="progress-disagree" :style="{width: disagreePercentage + '%'}"></div>
+</div>
+<p1>Agree: {{ voteCounts.agree }} Disagree: {{ voteCounts.disagree }}</p1>
       <div class="vote-buttons">
-        <button class="agree-btn" @click="submitVote(selectedProposal.pk, true)">Agree</button>
-        <button class="disagree-btn" @click="submitVote(selectedProposal.pk, false)">Disagree</button>
+        <button
+  class="agree-btn"
+  :disabled="userHasVoted"
+  @click="userHasVoted ? alert('You have already voted on this proposal.') : submitVote(selectedProposal.pk, true)"
+>
+  Agree
+</button>
+<button
+  class="disagree-btn"
+  :disabled="userHasVoted"
+  @click="userHasVoted ? alert('You have already voted on this proposal.') : submitVote(selectedProposal.pk, false)"
+>
+  Disagree
+</button>
       </div>
       <button class="close-modal" @click="closeVoteModal">Close</button>
     </div>
@@ -66,6 +89,7 @@
       <h4>Create a New Post</h4>
       <input type="text" v-model="newPost.title" placeholder="Title" />
       <textarea v-model="newPost.description" placeholder="Description"></textarea>
+      <input type="date" v-model="newPost.vote_deadline" />
       <div class="create-post-buttons">
         <button class="submit-btn" @click="submitPost">Submit</button>
         <button class="cancel-btn" @click="closeCreatePostModal">Cancel</button>
@@ -79,6 +103,7 @@ import axios from "axios";
 export default {
   data() {
     return {
+      userHasVoted: false,
       selectedItem: null,
       project: {
         logo: "",
@@ -97,6 +122,7 @@ export default {
       newPost: {
         title: "",
         description: "",
+        vote_deadline: "",
       },
       showCreatePostModal: false,
       menuItems: [
@@ -112,7 +138,25 @@ async mounted() {
   this.fetchProjectDetails(this.$route.params.pk);
     this.fetchProposals(this.$route.params.pk);
 },
+
+computed: {
+      currentDate() {
+        return new Date().toISOString().slice(0, 10);
+      },
+      agreePercentage() {
+    return (this.voteCounts.agree / (this.voteCounts.agree + this.voteCounts.disagree)) * 100;
+  },
+  disagreePercentage() {
+    return (this.voteCounts.disagree / (this.voteCounts.agree + this.voteCounts.disagree)) * 100;
+  },
+    },
+
 methods: {
+
+  isActive(deadline) {
+        return this.currentDate <= deadline;
+      },
+
 redirectToMyPage() {
 this.$router.push("/my-page");
 },
@@ -148,6 +192,7 @@ async fetchProjectDetails(pk) {
         projects: parseInt(this.$route.params.pk),
         title: this.newPost.title,
         description: this.newPost.description,
+        vote_deadline: this.newPost.vote_deadline,
       };
 
       await axios.post("https://cardene7.pythonanywhere.com/api/proposals/", postData);
@@ -174,11 +219,13 @@ async fetchProposals(pk) {
 },
 logout() {
 },
+
 async openVoteModal(proposal) {
-      this.selectedProposal = proposal;
+  this.selectedProposal = proposal;
       this.showVoteModal = true;
       await this.fetchVoteCounts(proposal.id);
-    },
+},
+
 closeVoteModal() {
 this.showVoteModal = false;
 },
@@ -209,16 +256,27 @@ async submitVote(proposalId, vote) {
   },
   async fetchVoteCounts(proposalId) {
   try {
+    const userAddress = await window.ethereum.request({ method: "eth_accounts" });
+    const userResponse = await axios.get(
+      `https://cardene7.pythonanywhere.com/api/users/${userAddress[0]}`
+    );
+    const currentUser = userResponse.data;
+
     const response = await axios.get(
       `https://cardene7.pythonanywhere.com/api/votes/?proposal=${proposalId}`
     );
     const votes = response.data;
+
+    // Check if the current user has voted
+    this.userHasVoted = votes.some(vote => vote.users === currentUser.pk && vote.proposal === this.selectedProposal.pk);
+
     this.voteCounts.agree = votes.filter((vote) => vote.vote === true && vote.proposal === this.selectedProposal.pk).length;
     this.voteCounts.disagree = votes.filter((vote) => vote.vote === false && vote.proposal === this.selectedProposal.pk).length;
   } catch (error) {
     console.error("Error fetching vote counts:", error);
   }
 },
+
   },
 };
 
@@ -278,6 +336,7 @@ async submitVote(proposalId, vote) {
 }
 
 .project-block {
+  position: relative;
   width: 80%;
   display: flex;
   flex-direction: column;
@@ -291,7 +350,7 @@ async submitVote(proposalId, vote) {
 .project-image img {
   width: 100%;
   height: auto;
-  max-height: 400px; /* 追加：最大高さの設定 */
+  max-height: 250px; /* 追加：最大高さの設定 */
   object-fit: contain; /* 変更：画像サイズを調整 */
   border-radius: 5px;
   margin-bottom: 20px;
@@ -357,6 +416,7 @@ async submitVote(proposalId, vote) {
   margin-top: 20px;
   margin-left: auto;
   margin-right: auto;
+  position: relative;
 }
 
 .create-post-btn {
@@ -364,7 +424,7 @@ async submitVote(proposalId, vote) {
   color: white;
   border: none;
   border-radius: 5px;
-  padding: 5px 15px;
+  padding: 15px 35px;
   cursor: pointer;
 }
 
@@ -396,6 +456,12 @@ align-items: center;
   max-width: 500px;
   width: 90%;
   margin: auto;
+}
+.modal-content p1{
+  display: flex;
+  position: relative;
+  left: 150px;
+  padding: 10px;
 }
 
 .create-post-buttons {
@@ -476,37 +542,113 @@ margin-top: 20px;
   width: 100%;
 }
 
-@media (max-width: 768px) {
-.sidebar {
-width: 200px;
+.project-overview img {
+  width: 100%;
+  height: auto;
+  max-height: 250px;
+  object-fit: contain;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  position: relative;
+  top: 10px;
+  right: 150px; /* 値を増やして画像をもう少し左に移動 */
 }
 
-.menu li {
-padding: 10px;
+.vote-deadline {
+    font-size: 12px;
+    color: #999;
+  }
+
+  .status-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    padding: 5px;
+    font-size: 12px;
+    border-radius: 15px;
+  }
+
+  .status-button.active {
+    background-color: #28a745;
+    color: white;
+  }
+
+  .status-button.closed {
+    background-color: #ccc;
+    color: white;
+  }
+
+  .phase {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: #f8f9fa;
 }
 
-.logout {
-left: 10px;
+.phase-color-1 {
+  background-color: #EED8EE;
 }
 
-.main {
-padding: 10px;
+.phase-color-2 {
+  background-color: #E3B8FF;
 }
 
-.project-image img {
-width: 70%;
+.phase-color-3 {
+  background-color: #C38FFF;
 }
 
-.project-info h2 {
-font-size: 18px;
+.phase-color-4 {
+  background-color: #A363FF;
 }
 
-.follow-btn {
-padding: 5px 10px;
+.phase-container {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  display: flex;
+  align-items: center;
+}
+.modal-content input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
-.project-overview h3 {
-font-size: 20px;
+.modal-content textarea {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  resize: vertical;
 }
+
+.progress {
+  width: 100%;
+  height: 15px;
+  background-color: #ccc;
+  display: flex;
+  border-radius: 5px;
 }
+
+.progress-agree {
+  background-color: #28a745;
+}
+
+.progress-disagree {
+  background-color: #dc3545;
+}
+
 </style>

@@ -6,34 +6,31 @@
       </div>
       <div class="header__bottom">
         <!-- 下段のヘッダー -->
-        <button v-if="isConnected && !gmail" class="header__login-btn" @click="showModal = true">ログイン</button>
+        <button v-if="isConnected && !gmail" class="header__login-btn" @click="showModal = true">Google Login</button>
         <p v-else>
           <w3m-core-button />
         </p>
+        <button v-if="isConnected" class="header__my-page-btn" @click="$router.push('/my-page')">MyPage</button>
       </div>
     </header>
     <div class="login-modal" v-if="showModal">
-      <h2 class="login-modal__title">ログイン</h2>
+      <h2 class="login-modal__title">Login</h2>
       <GoogleLogin :callback="callback"/>
       <div>
-        <button class="close-btn" @click="showModal = false">閉じる</button>
+        <button class="close-btn" @click="showModal = false">close</button>
       </div>
     </div>
 
-    <main class="main-content" :style="mainContentStyle">
-      <div class="main-content__text">
-        <div class="DAOtext">
-          <h1>Pro Dao</h1>
-        </div>
-        <div class="abaut">
-          <p>
-            Implement DAO support tools for in-house projects to <br />
-            achieve efficient and transparent project management.
-
-          </p>
-        </div>
-        <!-- <button>LEARN MORE</button> -->
-      </div>
+    <main class="main-content">
+    <div class="images-container">
+      <img
+        v-for="index in 5"
+        :key="index"
+        class="main-content__image"
+        :src="`../../assets/${index}.png`"
+        alt="Background image"
+      />
+    </div>
     </main>
   </div>
 </template>
@@ -163,10 +160,10 @@ export default {
       walletAddress: '',
       users: [],
       mainContentStyle: {
-        backgroundImage: 'url(../../assets/Header.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      },
+      backgroundImage: `url(../../assets/${Math.floor(Math.random() * 5) + 1}.png)`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+    },
       isConnected: account.isConnected
     };
   },
@@ -196,6 +193,10 @@ export default {
 </script>
 
 <style scoped>
+  header {
+    z-index: 10;
+    position: relative;
+  }
 .header__top {
   background-color: #3B00DD;
   height: 40px;
@@ -203,8 +204,8 @@ export default {
 
 .header__bottom {
   background-color: #ffffff;
-  height: 80px;
-  border-bottom: 1px solid #cccccc;
+  height: 110px;
+  border-bottom: 2px solid #cccccc;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -215,6 +216,9 @@ export default {
   padding: 0.5rem 2rem;
   font-size: 1rem;
   cursor: pointer;
+  border-radius: 10px;
+  background-color: #3B00DD;
+    color: #fff;
 }
 
 .login-modal {
@@ -303,18 +307,23 @@ padding: 8px 16px;
 cursor: pointer;
 width: 100%;
 }
-.main-content {
+/* .main-content {
   display: flex;
   justify-content: left;
   align-items: center;
   padding: 4rem;
   height: 100vh;
   text-align: center;
-}
+} */
+.main-content__images {
+    display: flex;
+    flex-direction: column;
+  }
 
-.main-content__text {
-  max-width: 600px;
-}
+  .main-content__image {
+    width: 100%; /* 画像をコンテナの幅いっぱいに広げる */
+    object-fit: cover; /* 画像のアスペクト比を維持し、コンテナに合わせてクロップする */
+  }
 
 .DAOtext{
 position: absolute;
@@ -348,4 +357,15 @@ letter-spacing: 0.25px;
 
 color: rgba(0, 0, 0, 0.6);
 }
+.header__my-page-btn {
+    padding: 0.5rem 2rem;
+    font-size: 1rem;
+    background-color: #3B00DD;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    margin-left: 1rem;
+    cursor: pointer;
+    border-radius: 10px;
+  }
 </style>
